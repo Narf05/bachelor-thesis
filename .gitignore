@@ -1,0 +1,69 @@
+# LaTeX auxiliary files
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+*.synctex.gz
+*.blg
+*.bbl
+*.bcf
+*.run.xml
+*.fdb_latexmk
+*.synctex(busy)
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+.ipynb_checkpoints/
+
+# R
+.Rhistory
+.RData
+.Rproj.user
+*.Rproj
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Data files (uncomment if you have large datasets)
+# *.csv
+# *.dat
+# *.xlsx
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# HTML cache directories (from your downloaded web pages)
+*_files/
+*.html
+
+# Temporary files
+*.tmp
+*.temp
