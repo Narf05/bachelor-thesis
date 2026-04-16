@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(pip install *)",
+      "Bash(python -c \"import numpy; import scipy; import pandas; import matplotlib; print\\('all ok'\\)\")",
+      "Bash(conda run -n bachelor-thesis python -c ' *)",
+      "Bash(where python *)",
+      "Read(//c/Users/frato/anaconda3/envs/**)",
+      "Read(//c/Users/frato/miniconda3/**)",
+      "Read(//c/ProgramData/anaconda3/**)",
+      "Bash(/c/Users/frato/anaconda3/envs/bachelor-thesis/python.exe -c ' *)",
+      "Bash(\"/c/Users/frato/anaconda3/envs/bachelor-thesis/python.exe\" -m jupyter nbconvert --to notebook --execute shakespeare_analysis.ipynb --output shakespeare_analysis_executed.ipynb --ExecutePreprocessor.timeout=120)",
+      "Bash(\"/c/Users/frato/anaconda3/envs/bachelor-thesis/python.exe\" -m jupyter kernelspec list)",
+      "Bash(\"/c/Users/frato/anaconda3/envs/bachelor-thesis/python.exe\" -m jupyter nbconvert --to notebook --execute shakespeare_analysis.ipynb --output shakespeare_analysis_executed.ipynb --ExecutePreprocessor.kernel_name=python3 --ExecutePreprocessor.timeout=180)",
+      "Bash(xargs cat *)",
+      "Bash(xargs grep *)",
+      "Bash(find /c/Users/frato/OneDrive/Documents/ETH/Semester6/BachelorThesis -name \"*.py\" -type f -exec grep -l \"get_or_process\\\\|ace\\\\|jackknife\" {} \\\\;)"
+    ]
+  }
+}
