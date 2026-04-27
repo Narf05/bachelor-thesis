@@ -100,9 +100,7 @@ def pipeline(
 
     Example
     -------
-    >>> from preprocessing.loaders import load_shakespeare
-    >>> from preprocessing.frequencies import pipeline
-    >>> text = load_shakespeare("data/.../hamlet.txt")
+    >>> text = Path("data/speakers/shakespeare/hamlet.txt").read_text()
     >>> wc, fc = pipeline(text)
     >>> print(f"n={sum(wc.values())}, S_obs={len(wc)}, f1={fc.get(1, 0)}")
     """
