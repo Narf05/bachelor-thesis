@@ -362,6 +362,22 @@ to the observed ratios using a heteroscedastic (the variance of the errors isn't
     \item code the models we want to use (all of them maybe) - Implementation
 \end{itemize}
 
+\subsection{What is a word?}
+Before implementing our models we first need to define what a word is. We know for a fact that we can think about it in different ways. For example are \emph{run}, \emph{running} and \empf{ran} the same word or do we consider them as different. Also we we are doing cross language comparisons, different languages have different ways of forming words. German for example has a compound way of forming words where we can make any word longer and it has a new meaning and should be considered as different for example.
+
+\paragraph{same language}
+Let's start by defining it for english. There are different approaches to it and we will compute them both ways. The first approach is given by: if two words have exactly the same meaning, we are not talking about synonymes, then its considered the same word. For example \emph{run} and \emph{ran}, any conjugation of the word will not be considered as a new word. This also applies to the plural if the words. This is called a \emph{lemma} - the base or dictionary form of a word.\\ 
+We will call a \emph{type} any distinct string that appears in a text, the example mentioned above would mean there are 3 different types. A \emph{token} is each individual occurrence of a word.\\
+The second approach is counting all the tokens. The Shakespeare studies use the token approach and count ever=y different occurence of a word.
+
+\paragraph{different languages}
+During this study we will also compare vocabulary richness across languages. More specifically between English, German and French. The also language using a compund system is German where we are able to add two distinct words and form a new one. In this matter we will take the translation of the german word in english and if it gives us two different words we will decompose the german word and count it as two tokens. If it gives a one word translation it will be counted as one token.
+-- OR WE JUST COUNT EVERYTHING AS PREVIOUSLY.\href{\href{}{}}{}
+
+\paragraph{data}
+https://www.linguistics.ucsb.edu/research/santa-barbara-corpus-spoken-american-english
+https://www.english-corpora.org/bnc/
+https://www.english-corpora.org/coca-spoken.asp
 
 \section{Results}\label{sec:results}
 
