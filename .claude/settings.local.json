@@ -15,7 +15,8 @@
       "Bash(\"/c/Users/frato/anaconda3/envs/bachelor-thesis/python.exe\" -m jupyter nbconvert --to notebook --execute shakespeare_analysis.ipynb --output shakespeare_analysis_executed.ipynb --ExecutePreprocessor.kernel_name=python3 --ExecutePreprocessor.timeout=180)",
       "Bash(xargs cat *)",
       "Bash(xargs grep *)",
-      "Bash(find /c/Users/frato/OneDrive/Documents/ETH/Semester6/BachelorThesis -name \"*.py\" -type f -exec grep -l \"get_or_process\\\\|ace\\\\|jackknife\" {} \\\\;)"
+      "Bash(find /c/Users/frato/OneDrive/Documents/ETH/Semester6/BachelorThesis -name \"*.py\" -type f -exec grep -l \"get_or_process\\\\|ace\\\\|jackknife\" {} \\\\;)",
+      "Bash(python code/intuition/mixture_models_shakespeare.py)"
     ]
   }
 }
