@@ -2,6 +2,20 @@
 \usepackage{graphicx} % Required for inserting images
 \usepackage{amssymb} % For \leftrightarrow
 \usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{orange},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    breaklines=true,
+    frame=lines
+}
 
 
 \title{BachelorThesis}
@@ -18,11 +32,11 @@ The problem of estimating species richness, which is the total number of distinc
 their effort to crack German ciphers during World War II~\cite{good1953,good2000}. Since then the ``species problem'' has 
 appeared in ecology (estimating butterfly species on an island), biology (counting microbial taxa), genetics (enumerating alleles), software engineering (finding undiscovered bugs), and linguistics (determining how many words an author knew)~\cite{bunge1993,chao2005,chao2016species}.\\
 
-In nearly all of these settings, counting the true richness is almost impossible. A sample will almost always miss a fraction of the true species, and the simple count of observed species $S_{\mathrm{obs}}$ systematically underestimates the true richness $S$. The magnitude of this negative bias depends on the heterogeneity of the underlying abundance distribution: the more unequal the species abundances, the more rare species the sample will fail to detect. This makes the gap between $S_{\mathrm{obs}}$ and $S$ the central statistical challenge of the field.\\
+In nearly all of these settings, counting the true richness is almost impossible. A sample will almost always miss a fraction of the true existing species, and the simple count of observed species $S_{\mathrm{obs}}$ systematically underestimates the true richness $S$. The magnitude of this negative bias depends on the heterogeneity of the underlying abundance distribution: the more unequal the species abundances, the more rare species the sample will fail to detect. This makes the gap between $S_{\mathrm{obs}}$ and $S$ the central statistical challenge of the field.\\
 
-Our main question throughout this thesis is: \emph{how can we estimate the total spoken vocabulary of a person from a finite recording of their speech?} In this setting, each distinct word corresponds to a species and each token (word occurrence) corresponds to an individual. Later on we will define more precisely what we mean by a distinct word. Spoken vocabulary falls right into the regime where species richness estimation is most difficult: word frequencies are highly heterogeneous, governed by Zipf's law, which states that the frequency of a word is approximately inversely proportional to its rank~\cite{zipf1949,baayen2001}. A small number of words (\emph{the}, \emph{is}, \emph{a} \emph{and}) represent a large share of all tokens, while the majority of distinct words appear only once or twice in any finite sample. Therefore, the number of words observed exactly once or twice, commonly referred to as singletons and doubletons, is always large, and the fraction of the vocabulary that remains unseen is substantial even in lengthy recordings.\\
+Our main question throughout this thesis is: \emph{how can we estimate the total spoken vocabulary of a person from a finite recording of their speech?} In this setting, each distinct word corresponds to a species and each token (word occurrence) corresponds to an individual. Later on we will define more precisely what we mean by a distinct word. Spoken vocabulary falls right into the regime where species richness estimation is most difficult: word frequencies are highly heterogeneous, governed by the Zipf's law, which states that the frequency of a word is approximately inversely proportional to its rank~\cite{zipf1949,baayen2001}.What is the rank in this context? Suppose you order all the words of a text by their frequencies, then the highest frequency word has rank 1, second highest has rank 2, etc... . By the formula we get that $f(1)\propto{1}$ and $f(2)\propto{1/2}$ thus the rank 1 word appears twice as often as the rank 2 word.  A small number of words (\emph{the}, \emph{is}, \emph{a} \emph{and}) represent a large share of all tokens, while the majority of distinct words appear only once or twice in any finite sample. Therefore, the number of words observed exactly once or twice, commonly referred to as singletons and doubletons, is always large, and the fraction of the vocabulary that remains unseen is substantial even in lengthy recordings.\\
 
-A person's \emph{active} spoken vocabulary (with how many different words they speak on a daily basis) is considerably smaller than their \emph{passive} vocabulary (the words they can understand). Research in applied linguistics suggests that comprehension of spoken texts requires knowledge of roughly 6\,000 to 7\,000 word families, whereas written texts require 8\,000 to 9\,000~\cite{nation2006}. But what a person \emph{produces} in conversation is a much smaller, context-dependent subset of even their active vocabulary. Estimating the size of this productive vocabulary from a finite speech sample is therefore a nontrivial statistical problem, and one that is well suited to the tools of nonparametric species richness estimation. We will also compare estimates derived from spoken data with those from written text, where we expect greater lexical diversity due to the wider range of registers and the time available for word choice.\\
+A person's \emph{active} spoken vocabulary (with how many different words they speak on a daily basis) is considerably smaller than their \emph{passive} vocabulary (the words they can understand). Research in applied linguistics suggests that comprehension of spoken texts requires knowledge of roughly 6\,000 to 7\,000 word families, whereas written texts require 8\,000 to 9\,000~\cite{nation2006}. But what a person \emph{produces} in conversation is a much smaller, context-dependent subset of even their active vocabulary. Estimating the size of this active vocabulary from a finite speech sample is therefore a nontrivial statistical problem, and one that is well suited to the tools of nonparametric species richness estimation. We will also compare estimates derived from spoken data with those from written text, where we expect greater lexical diversity due to the wider range of registers and the time available for word choice.\\
 
 In this thesis we proceed as follows. In Section~\ref{sec:framework} we establish the mathematical framework and notation for species richness estimation, distinguishing abundance data from incidence data and defining sample coverage. Section~\ref{sec:estimators} reviews the classical nonparametric estimators such as Good-Turing, Chao1, iChao1, ACE, and the jackknife, discussing the assumptions, strengths, and limitations of each. Section~\ref{sec:shape} presents the main theoretical contribution: shape-constrained estimation via $k$-monotone and completely monotone distributions, We explain why using the completely monotone model is a natural next step when the degree of monotonicity $k$ is large.
 Section~\ref{sec:data} describes our data sources: the Shakespeare word counts from Spevack~\cite{spevack1968} for replication, and our own spoken language corpus for the novel analysis. Section~\ref{sec:results} presents the results, including estimator comparisons, rarefaction and extrapolation curves. We discuss the findings in Section~\ref{sec:discussion} and conclude in Section~\ref{sec:conclusion}.
@@ -30,7 +44,7 @@ Section~\ref{sec:data} describes our data sources: the Shakespeare word counts f
 
 \section{Framework and Notation}\label{sec:framework}
 
-Let us define our framework and notation. Consider an assemblage consisting of $N$ total individuals, each belonging to one of $S$ distinct species. Let $N_i$ denote the number of individuals of the $i^{th}$ species in the assemblage, with $i = 1, 2, \ldots, S$ and $N_i > 0$. The total population size is
+Let us define our framework and notation. Consider an assemblage consisting of $N$ total individuals, which is a finite set, each belonging to one of $S$ distinct species. Let $N_i$ denote the number of individuals of the $i^{th}$ species in the assemblage, with $i = 1, 2, \ldots, S$ and $N_i > 0$. The total population size is
 \[
     N = \sum_{i=1}^{S} N_i\,.
 \]
@@ -38,11 +52,11 @@ The relative abundance of species $i$ is $p_i = N_i / N$, with
 $\sum_{i=1}^{S} p_i = 1$. The quantities $N$, $S$, $N_i$, and $p_i$ 
 represent the true and unknown parameters of the assemblage.\\
 
-Assume we draw a random sample of $n$ individuals from the assemblage. In this sample, a total of $S_{\mathrm{obs}}$ distinct species are observed, we call it the \emph{reference sample}. Let $X_i$ be the number of individuals of the $i^{th}$ species observed in this sample. Only species with $X_i > 0$ are observable, and $\sum_{i=1}^{S} X_i = n$. We denote by $f_k$ the \emph{abundance frequency count}: the number of species represented by exactly $k$ individuals in the reference sample, for $k = 1, 2, \ldots, n$. That is,
+Assume we draw a random sample of $n$ individuals from the assemblage, thus having\quad $n<N$.\quad In this sample, a total of $S_{\mathrm{obs}}$ distinct species are observed, we call it the \emph{reference sample}. Let $X_i$ be the number of individuals of the $i^{th}$ species observed in this sample. Only species with $X_i > 0$ are observable, and $\sum_{i=1}^{S} X_i = n$. We denote by $f_k$ the \emph{abundance frequency count}: the number of species represented by exactly $k$ individuals in the reference sample, for $k = 1, 2, \ldots, n$. That is,
 \[
     f_k = \#\{i : X_i = k\}\,.
 \]
-The sample size can then be expressed in terms of frequency counts as
+The sample size can then be expressed in terms of the abundance frequency counts as
 \[
     n = \sum_{i=1}^{S} X_i = \sum_{k \geq 1} k\, f_k\,.
 \]
@@ -65,7 +79,7 @@ In abundance sampling, the sampling unit is an individual. In the discrete-type 
 
 
 \paragraph{Incidence data.}
-In incidence sampling, the sampling unit is not an individual but a spatial or temporal unit (a quadrat, a time window, etc.). For each of $T$ sampling units, one records only the detection or non-detection of each species, yielding an incidence matrix $[W_{ij}]$ and incidence-based frequency counts $Q_k$ ($k = 1, \ldots, T$), the number of species detected in exactly $k$ sampling units. Since our data consist of individual words with their frequencies, we work exclusively with abundance data throughout this thesis. For a detailed treatment of incidence-based methods, we refer to Chao and Chiu~\cite{chao2016species}.\\
+In incidence sampling, the sampling unit is not an individual but a spatial or temporal unit (a quadrat, a time window, etc.). For each of $T$ sampling units, one records only the detection or non-detection of each species, yielding an incidence matrix $[W_{ij}]$ and incidence-based frequency counts $Q_k$ ($k = 1, \ldots, T$), the number of species detected in exactly $k$ sampling units. Therefore $Q_T$ refers to the number of species detected in all of the sampling units. The number of all observed species is given by $\sum_{k=1}^T Q_k$. Since our data consist of individual words with their frequencies, we work exclusively with abundance data throughout this thesis. For a detailed treatment of incidence-based methods, we refer to Chao and Chiu~\cite{chao2016species}.\\
 
 
 \subsection{Sample coverage}\label{subsec:coverage}
@@ -86,9 +100,9 @@ This adjustment reduces the bias of the basic Turing estimator, particularly whe
 
 \subsection{Parametric and nonparametric approaches}
 
-A parametric model assumes that the species abundance distribution follows a known family of distributions, fully characterized by a finite parameter vector $\theta$. Common choices include the log-normal, the inverse-Gaussian, and the Zipf-Mandelbrot law. While such models can yield efficient estimators when the assumed form is correct, simulations have shown that they perform poorly when it is 
+A parametric model assumes that the species abundance distribution belongs to a known family of distributions, fully characterized by a finite parameter vector $\theta$. Common choices include the log-normal, the inverse-Gaussian, and the Zipf-Mandelbrot law. While such models can yield efficient estimators when the assumed form is well specified, simulations have shown that they perform poorly when it is 
 not~\cite{chao2016species}. Moreover, two parametric models may fit the observed data equally well yet produce widely different estimates of $S$, making the choice of distributional family a source of 
-considerable uncertainty.
+considerable uncertainty. (WHEN DOES THIS HAPPEN - ITS UNINTUITIVE)
 
 A nonparametric model makes no assumption about the functional form of the underlying abundance distribution. Instead, the number of undetected species is estimated directly from the lower-order frequency counts $f_1, f_2, \ldots, f_r$ for some small $r$. This approach is more robust across applications and permits meaningful comparisons between assemblages, since it does not require that different assemblages follow the same distributional family. All the estimators considered in this thesis are nonparametric.\\
 
@@ -97,7 +111,7 @@ A nonparametric model makes no assumption about the functional form of the under
 When comparing species richness across multiple assemblages (for example, the vocabulary of two different speakers, or spoken versus written language from the same individual), a direct comparison of $S_{\mathrm{obs}}$ is misleading if the sample sizes differ, since larger samples will generally detect more species. Two standardization approaches are commonly used.
  
 \paragraph{Sample-size-based rarefaction and extrapolation.}
-Rarefaction asks: if we had drawn only $m < n$ individuals, how many species would we expect to observe? By subsampling from the reference sample, one constructs a \emph{rarefaction curve} that shows expected richness as a function of sample size. Conversely, extrapolation projects the curve beyond the observed sample size, predicting how many additional species would be detected if sampling effort were 
+Rarefaction asks: if we had drawn only $m < n$ individuals, how many species would we expect to observe? By subsampling from the reference sample, one constructs a \emph{rarefaction curve} that shows expected richness as a function of the sample size. Conversely, extrapolation projects the curve beyond the observed sample size, predicting how many additional species would be detected if sampling effort were 
 increased~\cite{colwell2012,chao2014inext}.
  
 \paragraph{Coverage-based standardization.}
@@ -118,14 +132,15 @@ In this section we review the principal nonparametric estimators of species rich
 \subsection{Good--Turing frequency estimation}
 
 The Good--Turing frequency estimator, developed by I.\,J.\ Good based on ideas from Alan Turing, originated in their wartime work on cracking German ciphers~\cite{good1953,good2000}. Good initially modelled the species frequencies using a multinomial distribution, but found this approach inaccurate for rare species. The key insight of Good--Turing estimation is to adjust the observed frequency of a species: for a species observed $k$ times, its estimated probability is
-\begin{equation}\label{eq:good_turing}
-    p_k = \frac{(k+1) \cdot f_{k+1}}{n \cdot f_k}\,,
+\begin{equation}
+    \hat{p}_k =
+    \begin{cases}
+        \dfrac{(k+1)\,f_{k+1}}{n\,f_k}, & k > 0, \\[6pt]
+        \dfrac{f_1}{n}, & k = 0.
+    \end{cases}
 \end{equation}
-where $n$ is the total sample size. Setting $k = 0$ in this formula gives the estimated total probability mass of all unseen species:
-\[
-    \hat{p}_0 = \frac{f_1}{n}\,.
-\]
-This quantity is \emph{not} the count of undetected species $f_0$; rather, it estimates the fraction of the assemblage's individuals that belong to species absent from the sample. It is the complement of the sample coverage $\hat{C} = 1 - f_1/n$ defined in 
+where $n$ is the total sample size.
+$\hat{p}_0$ is \emph{not} the count of undetected species $f_0$; rather, it estimates the fraction of the assemblage's individuals that belong to species absent from the sample. It is the complement of the sample coverage $\hat{C} = 1 - f_1/n$ defined in 
 Section~\ref{subsec:coverage}.
 
 \paragraph{Simple Good--Turing smoothing.}
@@ -166,7 +181,12 @@ The Chao1 estimator achieves its lower bound with equality when all undetected s
 singletons, i.e. when the rare species are approximately 
 homogeneous in their abundances. In practice, this condition is rarely
 met for linguistic data, where word frequencies are highly heterogeneous. When heterogeneity is high, the true $f_0$ can substantially exceed the Chao1 estimate, meaning the estimator underestimates the true richness~\cite{chao2016species,schmitz2025}.
-
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{image.png}
+    \caption{Enter Caption}
+    \label{fig:placeholder}
+\end{figure}
 
 \paragraph{The iChao1 estimator.}
 Chiu et al.~\cite{chiu2014} derived an improved lower bound by extending the Cauchy-Schwarz argument to incorporate tripletons $f_3$ and quadrupletons $f_4$:
@@ -351,33 +371,28 @@ to the observed ratios using a heteroscedastic (the variance of the errors isn't
 
 \section{Data and Methodology}\label{sec:data}
 
-\begin{itemize}
-    \item What is a word, (ex: are run and running to different or not)
-    \item what language are we working with: comparison of Australian english, American english and British english. But also cross language comparison. 
-    \item When applying it to German, the compound words will need to be separated.
-    \item Deal with filler words such as "um", "hmmm" etc...
-    \item how do we get the data: with existing recordings and/or new self-made recordings.
-    \item transcript method and preprocessing.
-    \item we will also apply our models to existing datasets to have a baseline: Shakespeare dataset for example.
-    \item code the models we want to use (all of them maybe) - Implementation
-\end{itemize}
-
 \subsection{What is a word?}
-Before implementing our models we first need to define what a word is. We know for a fact that we can think about it in different ways. For example are \emph{run}, \emph{running} and \empf{ran} the same word or do we consider them as different. Also we we are doing cross language comparisons, different languages have different ways of forming words. German for example has a compound way of forming words where we can make any word longer and it has a new meaning and should be considered as different for example.
+Before implementing our models we first need to define what a word is. We know that we can think about it in different ways. For example: are \emph{run}, \emph{running} and \empf{ran} the same word or do we consider them as different. Also we we are doing cross language comparisons and different languages have different ways of forming words. German for example has a compound way of forming words where we can make any word longer and it has a new meaning and should be considered as different.
 
 \paragraph{same language}
-Let's start by defining it for english. There are different approaches to it and we will compute them both ways. The first approach is given by: if two words have exactly the same meaning, we are not talking about synonymes, then its considered the same word. For example \emph{run} and \emph{ran}, any conjugation of the word will not be considered as a new word. This also applies to the plural if the words. This is called a \emph{lemma} - the base or dictionary form of a word.\\ 
+Let's start by defining it for english. There are different approaches to it and we will adress them both. The first approach is the following: if two words have exactly the same meaning, we are not talking about synonymes, then its considered the same word. For example \emph{run} and \emph{ran}, any conjugation of the word will not be considered as a new word. This also applies to the plural of the words. This is called a \emph{lemma} - the base or dictionary form of a word.\\ 
 We will call a \emph{type} any distinct string that appears in a text, the example mentioned above would mean there are 3 different types. A \emph{token} is each individual occurrence of a word.\\
-The second approach is counting all the tokens. The Shakespeare studies use the token approach and count ever=y different occurence of a word.
+The second approach is counting all the tokens. The Shakespeare studies use the token approach and count every different occurence of a word.
 
 \paragraph{different languages}
 During this study we will also compare vocabulary richness across languages. More specifically between English, German and French. The also language using a compund system is German where we are able to add two distinct words and form a new one. In this matter we will take the translation of the german word in english and if it gives us two different words we will decompose the german word and count it as two tokens. If it gives a one word translation it will be counted as one token.
 -- OR WE JUST COUNT EVERYTHING AS PREVIOUSLY.\href{\href{}{}}{}
 
 \paragraph{data}
-https://www.linguistics.ucsb.edu/research/santa-barbara-corpus-spoken-american-english
+Our data comes from different sources, we used open source collections of speeches. We used the British National corpus, the santa-barbara corpus of spoken american english, the internet movie script database (IMSdb) as well as the skakespeare dataset that serves as reference.\\
+From the IMSdb we downloaded the scripts from around 1200 different english films. After that we used some preprocessing tools to clean the data and only keep the dialogues. After this we assigned for each character from every film their speech and only kept the interactions from the characters that had more then 500 words. 500 words was a cutoff value since it is approximately 5min. A comfortable speaking pace ranges between 100 and 150 wpm. 
 https://www.english-corpora.org/bnc/
+https://www.linguistics.ucsb.edu/research/santa-barbara-corpus-spoken-american-english
 https://www.english-corpora.org/coca-spoken.asp
+
+We implemented a few estimation models and the code is given here.\\
+
+
 
 \section{Results}\label{sec:results}
 
