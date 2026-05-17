@@ -39,7 +39,7 @@ Our main question throughout this paper is: \emph{how can we estimate the total 
 A person's \emph{active} spoken vocabulary (with how many different words they speak on a daily basis) is considerably smaller than their \emph{passive} vocabulary (the words they can understand). Research in applied linguistics suggests that comprehension of spoken texts requires knowledge of roughly 6\,000 to 7\,000 word families, whereas written texts require 8\,000 to 9\,000~\cite{nation2006}. But what a person \emph{produces} in conversation is a much smaller, context-dependent subset of even their active vocabulary. Estimating the size of this active vocabulary from a finite speech sample is therefore a nontrivial statistical problem, and one that is well suited to the tools of nonparametric species richness estimation. We will also compare estimates derived from spoken data with those from written text, where we expect greater lexical diversity due to the wider range of registers and the time available for word choice.\\
 
 In this thesis we proceed as follows. In Section~\ref{sec:framework} we establish the mathematical framework and notation for species richness estimation, distinguishing abundance data from incidence data and defining sample coverage. Section~\ref{sec:estimators} reviews the classical nonparametric estimators such as Good-Turing, Chao1, iChao1, ACE, and the jackknife, discussing the assumptions, strengths, and limitations of each. Section~\ref{sec:shape} presents the main theoretical contribution: shape-constrained estimation via $k$-monotone and completely monotone distributions, We explain why using the completely monotone model is a natural next step when the degree of monotonicity $k$ is large.
-Section~\ref{sec:data} describes our data sources: the Shakespeare word counts from Spevack~\cite{spevack1968} for replication, and our own spoken language corpus for the novel analysis. Section~\ref{sec:results} presents the results, including estimator comparisons, rarefaction and extrapolation curves. We discuss the findings in Section~\ref{sec:discussion} and conclude in Section~\ref{sec:conclusion}.
+Section~\ref{sec:data} describes our data sources: the Shakespeare word counts from Spevack~\cite{Spevack1968} for replication, and our own spoken language corpus for the novel analysis. Section~\ref{sec:results} presents the results, including estimator comparisons, rarefaction and extrapolation curves. We discuss the findings in Section~\ref{sec:discussion} and conclude in Section~\ref{sec:conclusion}.
 
 
 \section{Framework and Notation}\label{sec:framework}
@@ -187,9 +187,7 @@ Rearranging yields a lower bound on the number of undetected species:
 \begin{equation}\label{eq:chao1_bound}
 \E[f_0] \geq \frac{\bigl(\E[f_1]\bigr)^2}{2\,\E[f_2]}\,.
 \end{equation}
-Replacing $\E[f_j]$ by the observed $f_j$ and adding
-$S_{\mathrm{obs}}$ gives the Chao1 estimator (with a finite-sample
-bias correction):
+Replacing $\E[f_j]$ by the observed $f_j$ and adding $S_{\mathrm{obs}}$ gives the Chao1 estimator (with a finite-sample bias correction):
 \begin{equation}\label{eq:chao1}
     \hat{S}_{\mathrm{Chao1}} =
     \begin{cases}
@@ -201,19 +199,12 @@ bias correction):
             & \text{if } f_2 = 0\,.
     \end{cases}
 \end{equation}
-For large sample sizes $n$, the correction factor $(n-1)/n$ is
-negligible and the estimator simplifies to
+
+
+For large sample sizes $n$, the correction factor $(n-1)/n$ is negligible and the estimator simplifies to
 $\hat{S}_{\mathrm{Chao1}} \approx S_{\mathrm{obs}} + f_1^2/(2f_2)$.
 
-The Cauchy--Schwarz inequality is sharp: equality holds if and only if
-$\lambda$ is constant under $H$, i.e., all species have the same
-detection rate. This means the Chao1 estimator achieves the true
-value only in the homogeneous case where all species are equally
-detectable. In practice, this condition is rarely met for linguistic
-data, where word frequencies are highly heterogeneous. When
-heterogeneity is high, the true $f_0$ can substantially exceed the
-Chao1 estimate, meaning the estimator underestimates the true
-richness~\cite{chao2016species,schmitz2025}.
+The Cauchy--Schwarz inequality is sharp: equality holds if and only if $\lambda$ is constant under $H$, i.e., all species have the same detection rate. This means the Chao1 estimator achieves the true value only in the homogeneous case where all species are equally detectable. In practice, this condition is rarely met for linguistic data, where word frequencies are highly heterogeneous. When heterogeneity is high, the true $f_0$ can substantially exceed the Chao1 estimate, meaning the estimator underestimates the true richness~\cite{chao2016species,schmitz2025}.
 
 
 \paragraph{The iChao1 estimator.}
@@ -243,8 +234,7 @@ The Abundance-based Coverage Estimator (ACE), developed by Chao and Lee~\cite{ch
     n_{\mathrm{rare}} &= \sum_{i=1}^{k} i\, f_i\,,  &
     \hat{C}_{\mathrm{rare}} &= 1 - \frac{f_1}{n_{\mathrm{rare}}}\,,
 \end{align*}
-where $n_{\mathrm{rare}}$ is the sample size restricted to the rare 
-group and $\hat{C}_{\mathrm{rare}}$ is Turing's coverage applied to that group.
+where $n_{\mathrm{rare}}$ is the sample size restricted to the rare group and $\hat{C}_{\mathrm{rare}}$ is Turing's coverage applied to that group.
 
 The key quantity is the squared coefficient of variation (CV) of the species abundances:
 \begin{equation}\label{eq:cv}
@@ -274,8 +264,7 @@ with the estimated squared CV of the rare group given by
 The cutoff $k = 10$ is conventional and simulation studies suggest that the estimator is reasonably robust to moderate changes in this value~\cite{chaolee1992}. However, for data with extremely heavy tails (as in linguistic applications), the choice of cutoff may have a larger effect and must be studied.
 
 \subsection{Jackknife estimators}
-The jackknife is a general-purpose technique for reducing the bias of an estimator~\cite{burnham1978,burnham1979}. The idea is as follows: from the reference sample of $n$ individuals, one systematically removes one individual at a time and recomputes the estimator on each reduced sample. The resulting \emph{pseudo-values} are then combined to produce a bias-corrected estimate. This is the first-order jackknife; 
-the second-order version extends the procedure by considering pairs of removed individuals, yielding a more aggressive bias correction at the cost of higher variance.
+The jackknife is a general-purpose technique for reducing the bias of an estimator~\cite{burnham1978,burnham1979}. The idea is as follows: from the reference sample of $n$ individuals, one systematically removes one individual at a time and recomputes the estimator on each reduced sample. The resulting \emph{pseudo-values} are then combined to produce a bias-corrected estimate. This is the first-order jackknife; the second-order version extends the procedure by considering pairs of removed individuals, yielding a more aggressive bias correction at the cost of higher variance.
  
 The first-order jackknife estimator for species richness is
 \begin{equation}\label{eq:jk1}
@@ -294,9 +283,7 @@ $S_{\mathrm{obs}}$, effectively assuming that every singleton represents one mis
 
 \subsection{Summary and limitations}
  
-Each of the estimators above has characteristic strengths and weaknesses. Good--Turing provides the conceptual foundation (sample coverage and the probability mass of unseen species) but does not directly yield an estimate of $f_0$ as a count. Chao1 gives a guaranteed lower bound that is easy to compute and widely applicable, but it can severely underestimate the true richness when species abundances are highly heterogeneous, precisely the situation we face
-with word frequency data. iChao1 tightens the bound by incorporating
-$f_3$ and $f_4$, but remains a lower bound. ACE accounts for heterogeneity through the coefficient of variation, but depends on the choice of cutoff $k$. The jackknife estimators offer bias reduction but lack the theoretical guarantee of a lower bound and can overshoot.
+Each of the estimators above has characteristic strengths and weaknesses. Good--Turing provides the conceptual foundation (sample coverage and the probability mass of unseen species) but does not directly yield an estimate of $f_0$ as a count. Chao1 gives a guaranteed lower bound that is easy to compute and widely applicable, but it can severely underestimate the true richness when species abundances are highly heterogeneous, precisely the situation we face with word frequency data. iChao1 tightens the bound by incorporating $f_3$ and $f_4$, but remains a lower bound. ACE accounts for heterogeneity through the coefficient of variation, but depends on the choice of cutoff $k$. The jackknife estimators offer bias reduction but lack the theoretical guarantee of a lower bound and can overshoot.
  
 A common limitation shared by all of these methods is that they use  only the first few frequency counts and treat the rest of the abundance distribution as a black box. In the next section, we explore a fundamentally different approach: instead of extracting information from a handful of frequency counts, we impose a \emph{shape constraint} on the entire distribution of abundances. This leads to the $k$-monotone and completely monotone estimators, which can exploit more of the available information while still remaining nonparametric.
 
@@ -309,8 +296,7 @@ The estimators presented in Section~\ref{sec:estimators} rely on only the first 
 \paragraph{The mixture framework.}
 We begin by defining the mixture model framework. Suppose we have $N$ species, and each species $i$ has its own abundance parameter $\lambda_i$, which governs how frequently it appears in a sample. Since we cannot know all $N$ individual parameters, we assume that $\lambda_1, \lambda_2, \ldots, \lambda_N$ are independent draws from a common distribution $G$, called the \emph{mixing distribution}. The model then has two layers:
 \begin{enumerate}
-    \item \textbf{Conditional layer:} Given $\lambda_i$, the number of times species $i$ is observed in the sample follows some simple distribution, typically a Poisson distribution with mean 
-    $\lambda_i$.
+    \item \textbf{Conditional layer:} Given $\lambda_i$, the number of times species $i$ is observed in the sample follows some simple distribution, typically a $\mathrm{Poisson}(\lambda_i)$ distribution.
     \item \textbf{Mixing layer:} The parameters $\lambda_1, \ldots, \lambda_N$ are themselves random, drawn independently from $G$.
 \end{enumerate}
 
@@ -360,17 +346,7 @@ which is the Poisson probability mass function with parameter $\lambda$. Thus, f
 
 \noindent
 \emph{Remark.}\;
-The same result can be obtained in a continuous-time framework. If one models
-the occurrences of each word as a Poisson process with rate $\lambda_i$(a counting process satisfying stationarity of rates, independence over
-non-overlapping intervals, and the impossibility of simultaneous
-events), then the number of occurrences in an observation window of length $T$
-follows a $\mathrm{Poisson}(\lambda_i T)$ distribution. The derivation proceeds
-via a system of ordinary differential equations solved by induction; see,
-e.g., Joyce~\cite{joyce2014poisson}. Since both routes lead to the same
-Poisson model, the choice between them is a modelling convenience: the
-discrete-slot view is more natural for a fixed-length corpus, while the
-continuous-time view arises naturally when the sampling effort is measured in
-time rather than token count.
+The same result can be obtained in a continuous-time framework. If one models the occurrences of each word as a Poisson process with rate $\lambda_i$(a counting process satisfying stationarity of rates, independence over non-overlapping intervals, and the impossibility of simultaneous events), then the number of occurrences in an observation window of length $T$ follows a $\mathrm{Poisson}(\lambda_i T)$ distribution. The derivation proceeds via a system of ordinary differential equations solved by induction; see, e.g., Joyce~\cite{joyce2014poisson}. Since both routes lead to the same Poisson model, the choice between them is a modelling convenience: the discrete-slot view is more natural for a fixed-length corpus, while the continuous-time view arises naturally when the sampling effort is measured in time rather than token count.
 
 
 
@@ -390,12 +366,7 @@ This quantity $p(0;G)$ is the central object of interest: once it is known, the 
 The mixing distribution $G$ captures the heterogeneity among species abundances. Its shape determines how many species are rare versus common, which in turn determines $f_0$, the number of species missed by the sample. For spoken vocabulary data, this heterogeneity is extreme: a handful of function words (\emph{the}, \emph{is}, \emph{and}) dominate the token counts, while the vast majority of distinct words appear only once or twice.
 
 \paragraph{Parametric versus nonparametric mixtures.}
-If $G$ is assumed to belong to a known parametric family, the estimation
-problem reduces to fitting a small number of parameters. This can be
-efficient when the assumed family is correct, but different parametric
-models may fit the observed data equally well yet yield widely different
-estimates of $S$~\cite{chao2016species}. To illustrate this, we fit three
-standard two-parameter mixture models to the Shakespeare corpus:
+If $G$ is assumed to belong to a known parametric family, the estimation problem reduces to fitting a small number of parameters. This can be efficient when the assumed family is correct, but different parametric models may fit the observed data equally well yet yield widely different estimates of $S$~\cite{chao2016species}. To illustrate this, we fit three standard two-parameter mixture models to the Shakespeare corpus:
 \begin{itemize}
     \item the \emph{Gamma--Poisson} (negative binomial) mixture, where
           $\Lambda \sim \mathrm{Gamma}(r, r/\mu)$;
@@ -405,46 +376,23 @@ standard two-parameter mixture models to the Shakespeare corpus:
           $\Lambda \sim \mathrm{InvGaussian}(\mu, \phi)$.
 \end{itemize}
 In each case, $X \mid \Lambda = \lambda \sim \mathrm{Poisson}(\lambda)$.
-The full probability mass functions are given in
-Appendix~\ref{app:parametric_models}.
+The full probability mass functions are given in Appendix~\ref{app:parametric_models}.
 
-Figure~\ref{fig:mixture_models} compares the three fits. The left panel
-shows the observed region ($x \geq 1$): all three models capture the
-shape of the abundance distribution reasonably well, with the
-Poisson--Inverse Gaussian mixture providing the closest fit
-($\chi^2 = 79.5$) and the Gamma--Poisson the worst
-($\chi^2 = 8952.3$). However, the right panel reveals dramatic
-disagreement in the unobserved region. The Gamma--Poisson model
-assigns $p(0) = 0.974$, implying that nearly all species are
-undetected and yielding an estimate of $\hat{N} \approx 1{,}004{,}540$, roughly 40 times the observed vocabulary. The LogNormal--Poisson
-gives $\hat{N} \approx 36{,}788$, while the Poisson--Inverse Gaussian
-gives $\hat{N} \approx 57{,}903$. Three models, comparable fit to the
-observed data, and estimates of total vocabulary size spanning two
-orders of magnitude.
+Figure~\ref{fig:mixture_models} compares the three fits. The left panel shows the observed region ($x \geq 1$): all three models capture the shape of the abundance distribution reasonably well, with the Poisson--Inverse Gaussian mixture providing the closest fit ($\chi^2 = 79.5$) and the Gamma--Poisson the worst ($\chi^2 = 8952.3$). However, the right panel reveals dramatic disagreement in the unobserved region. The Gamma--Poisson model assigns $p(0) = 0.974$, implying that nearly all species are undetected and yielding an estimate of $\hat{N} \approx 1{,}004{,}540$, roughly 40 times the observed vocabulary. The LogNormal--Poisson gives $\hat{N} \approx 36{,}788$, while the Poisson--Inverse Gaussian gives $\hat{N} \approx 57{,}903$. Three models, comparable fit to the observed data, and estimates of total vocabulary size spanning two orders of magnitude.
 
-This sensitivity to the parametric form of $G$ motivates the
-nonparametric approach: if $G$ is left completely unspecified, no
-distributional form is assumed, avoiding the risk of
-misspecification. This flexibility makes nonparametric mixtures
-particularly suited to problems like vocabulary estimation, where the
-true shape of the abundance distribution is unknown.
+This sensitivity to the parametric form of $G$ motivates the nonparametric approach: if $G$ is left completely unspecified, no distributional form is assumed, avoiding the risk of misspecification. This flexibility makes nonparametric mixtures particularly suited to problems like vocabulary estimation, where the true shape of the abundance distribution is unknown.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{mixture_shakespeare.png}
-    \caption{Comparison of three parametric Poisson mixture models fitted
-    to the Shakespeare corpus (25,700 observed types, 890,426 tokens).
-    Left: fitted versus observed proportions for $x \geq 1$.
-    Right: full mixture PMF including the extrapolated probability at
-    $x = 0$ (highlighted). The goodness-of-fit summary is shown below
-    the plots.}
+    \caption{Comparison of three parametric Poisson mixture models fitted to the Shakespeare corpus (25,700 observed types, 890,426 tokens). Left: fitted versus observed proportions for $x \geq 1$. Right: full mixture PMF including the extrapolated probability at $x = 0$ (highlighted). The goodness-of-fit summary is shown below the plots.}
     \label{fig:mixture_models}
 \end{figure}
 
 
 
 \paragraph{The likelihood.}
-Under the mixture model, the $N$ species abundances are independent draws from a distribution with probability mass function $p(x; G)$. Since $n_0 = N - S_{\mathrm{obs}}$ species are unobserved, the full likelihood function for $N$ and $G$ based on all species (observed and undetected) is~\cite{cheewang2016}
+Under the mixture model, the $N$ species abundances are independent draws from a distribution with probability mass function $p(x; G)$. Since $n_0 = N - S_{\mathrm{obs}}$ species are unobserved, the full likelihood function for $N$ and $G$ based on all species (observed and undetected) is~\cite{CheeWang2016}
 \begin{equation}\label{eq:full_likelihood}
     L(N, G) = \frac{N!}{(N - S_{\mathrm{obs}})! \,\displaystyle\prod_{x 
     \geq 1} f_x!} \; \bigl\{p(0; G)\bigr\}^{N - S_{\mathrm{obs}}} 
@@ -461,8 +409,7 @@ Sanathanan~\cite{sanathanan1972} showed that the full likelihood decomposes as $
     \end{equation}
     \item The \textbf{unconditional approach} jointly maximizes $L(N,G)$ over both $N$ and $G$. Wang and Lindsay~\cite{wanglindsay2005} showed that the resulting estimate also satisfies  Equation~\eqref{eq:horvitz_thompson}.
 \end{itemize}
-In both cases, the estimation of $N$ reduces to estimating $p(0;G)$ well. This makes the choice of mixture model critical, particularly its 
-behavior near $\lambda = 0.
+In both cases, the estimation of $N$ reduces to estimating $p(0;G)$ well. This makes the choice of mixture model critical, particularly its behavior near $\lambda = 0$.
 
 \paragraph{Likelihood decomposition.}
 Each of the $N$ species is independently either observed (with probability $1 - p(0;G)$) or missed (with probability $p(0;G)$). The number of observed species therefore follows a binomial distribution:
@@ -639,11 +586,7 @@ This convergence result justifies using the completely monotone model whenever t
 
 \subsubsection{The Balabdaoui & Kulagina estimator: $\hat{N}_{\infty}$}
 
-Balabdaoui and Kulagina \cite{BalabdaouiKulagina2020} avoid the problem of 
-selecting $k$ by letting it grow logarithmically with the sample size $n$. 
-Define $\bar{\alpha}_n = 1 - \bar{p}_n(1)$, where $\bar{p}_n$ is the 
-empirical estimator of the zero-truncated PMF. The degree of monotonicity 
-is set to
+Balabdaoui and Kulagina \cite{BalabdaouiKulagina2020} avoid the problem of selecting $k$ by letting it grow logarithmically with the sample size $n$. Define $\bar{\alpha}_n = 1 - \bar{p}_n(1)$, where $\bar{p}_n$ is the empirical estimator of the zero-truncated PMF. The degree of monotonicity is set to
 \[
 k_n = \left\lfloor \frac{\log n}{2 \log(\bar{\alpha}_n^{1/2} + 1)} 
 \right\rfloor,
@@ -653,10 +596,7 @@ and the estimator of $N$ is
 \hat{N}_{\infty} = \left\lfloor n\left(1 - \sum_{j=1}^{k_n} (-1)^j 
 \binom{k_n}{j} \bar{p}_n(j)\right) \right\rfloor.
 \]
-Under the assumption that $\bar{\alpha}_n \geq (\sqrt{2} - 1)^2$ and that 
-the true PMF is a finite mixture of geometrics, the estimator is 
-asymptotically normal, yielding the confidence interval at level 
-$1 - \alpha$:
+Under the assumption that $\bar{\alpha}_n \geq (\sqrt{2} - 1)^2$ and that the true PMF is a finite mixture of geometrics, the estimator is asymptotically normal, yielding the confidence interval at level $1 - \alpha$:
 \[
 \hat{N}_{\infty} \;\pm\; z_{1-\alpha/2}\,\sqrt{n}\,\hat{\sigma}_n, 
 \qquad \hat{\sigma}_n^2 = \sum_{l=1}^{k_n} \binom{k_n}{l}^2 
@@ -669,7 +609,7 @@ TODO
 \section{Data and Methodology}\label{sec:data}
 
 \subsection{What is a word?}
-Before implementing our models we first need to define what a word is. We know that we can think about it in different ways. For example: are \emph{run}, \emph{running} and \empf{ran} the same word or do we consider them as different. Also we we are doing cross language comparisons and different languages have different ways of forming words. German for example has a compound way of forming words where we can make any word longer and it has a new meaning and should be considered as different.
+Before implementing our models we first need to define what a word is. We know that we can think about it in different ways. For example: are \emph{run}, \emph{running} and \emph{ran} the same word or do we consider them as different. Also we we are doing cross language comparisons and different languages have different ways of forming words. German for example has a compound way of forming words where we can make any word longer and it has a new meaning and should be considered as different.
 
 \paragraph{same language}
 Let's start by defining it for english. There are different approaches to it and we will adress them both. The first approach is the following: if two words have exactly the same meaning, we are not talking about synonymes, then its considered the same word. For example \emph{run} and \emph{ran}, any conjugation of the word will not be considered as a new word. This also applies to the plural of the words. This is called a \emph{lemma} - the base or dictionary form of a word.\\ 
@@ -678,7 +618,7 @@ The second approach is counting all the tokens. The Shakespeare studies use the 
 
 \paragraph{different languages}
 During this study we will also compare vocabulary richness across languages. More specifically between English, German and French. The also language using a compund system is German where we are able to add two distinct words and form a new one. In this matter we will take the translation of the german word in english and if it gives us two different words we will decompose the german word and count it as two tokens. If it gives a one word translation it will be counted as one token.
--- OR WE JUST COUNT EVERYTHING AS PREVIOUSLY.\href{\href{}{}}{}
+-- OR WE JUST COUNT EVERYTHING AS PREVIOUSLY.
 
 \paragraph{data}
 Our data comes from different sources, we used open source collections of speeches. We used the British National corpus, the santa-barbara corpus of spoken american english, the internet movie script database (IMSdb) as well as the skakespeare dataset that serves as reference.\\
@@ -699,32 +639,15 @@ The choice between counting types and counting lemmas affects the estimated voca
 
 \subsection{Data sources}
 
-Our analysis draws on four data sources: one established reference corpus 
-and three sources of spoken or dialogue-based English.
+Our analysis draws on four data sources: one established reference corpus and three sources of spoken or dialogue-based English.
 
-\paragraph{Shakespeare corpus.} As a baseline for replication and 
-comparison, we use the word frequency counts from Spevack's concordance 
-\cite{Spevack1968}, comprising 890,426 tokens and 25,700 observed types 
-across the complete works of Shakespeare. This dataset has been widely used 
-in the species richness literature 
-\cite{BalabdaouiKulagina2020, CheeWang2016} and allows us to verify our 
-implementations against published results.
+\paragraph{Shakespeare corpus.}  As a baseline for replication and comparison, we use the word frequency counts from Spevack's concordance  \cite{Spevack1968}, comprising 890,426 tokens and 25,700 observed types  across the complete works of Shakespeare. This dataset has been widely used  in the species richness literature  \cite{BalabdaouiKulagina2020, CheeWang2016} and allows us to verify our  implementations against published results.
 
-\paragraph{Internet Movie Script Database (IMSDb).} We downloaded scripts 
-from approximately 1,200 English-language films from the Internet Movie 
-Script Database.\footnote{See Appendix~\ref{app:sources} for URLs of all 
-data sources.} We applied preprocessing tools to extract only the dialogue 
-portions, discarding stage directions and scene descriptions. Each 
-character's lines were then aggregated across the entire film. To ensure a 
-minimum sample size, we retained only characters with at least 500 tokens, 
-corresponding to roughly 3--5 minutes of speech at a comfortable speaking 
-pace of 100--150 words per minute. This yielded [NUMBER] characters with a 
-median sample size of [NUMBER] tokens.
+\paragraph{Internet Movie Script Database (IMSDb).} 
+We downloaded scripts from approximately 1,200 English-language films from the Internet Movie Script Database.\footnote{See Appendix~\ref{app:sources} for URLs of all data sources.} We applied preprocessing tools to extract only the dialogue portions, discarding stage directions and scene descriptions. Each character's lines were then aggregated across the entire film. To ensure a minimum sample size, we retained only characters with at least 500 tokens, corresponding to roughly 3--5 minutes of speech at a comfortable speaking pace of 100--150 words per minute. This yielded [NUMBER] characters with a median sample size of [NUMBER] tokens.
 
-\paragraph{British National Corpus (BNC).} We used the spoken component of 
-the British National Corpus, which contains transcriptions of spontaneous 
-British English conversation and other spoken registers. [ADD: how many 
-speakers you used, how many tokens, any filtering you applied.]
+\paragraph{British National Corpus (BNC).} 
+We used the spoken component of the British National Corpus, which contains transcriptions of spontaneous British English conversation and other spoken registers. [ADD: how many speakers you used, how many tokens, any filtering you applied.]
 
 \paragraph{Santa Barbara Corpus of Spoken American English.} This corpus 
 consists of transcriptions of naturally occurring spoken interactions in 
@@ -734,11 +657,7 @@ American English. [ADD: same details --- speakers, tokens, filtering.]
 
 All texts were lowercased and stripped of punctuation. We removed all the number and filler words, the contractions where left as a single type.
 
-For each speaker or character, we computed the abundance frequency counts 
-$f_1, f_2, \ldots$ as defined in Section~\ref{sec:framework}: $f_k$ is the 
-number of types appearing exactly $k$ times in that speaker's text. These 
-frequency counts serve as the input to all the estimators described in 
-Sections~\ref{sec:estimators} and~\ref{sec:beyond}.
+For each speaker or character, we computed the abundance frequency counts $f_1, f_2, \ldots$ as defined in Section~\ref{sec:framework}: $f_k$ is the number of types appearing exactly $k$ times in that speaker's text. These frequency counts serve as the input to all the estimators described in Sections~\ref{sec:estimators} and~\ref{sec:shape}.
 
 
 \section{Results}\label{sec:results}
@@ -762,11 +681,7 @@ Summarize findings, answer research questions, suggest future work.
 
 \section{Parametric mixture models}\label{app:parametric_models}
 
-We give the full probability mass functions for the three parametric
-Poisson mixture models fitted in Section~\ref{sec:mixture_models}. In
-each case, the conditional model is
-$X \mid \Lambda = \lambda \sim \mathrm{Poisson}(\lambda)$; the models
-differ only in the mixing distribution assumed for $\Lambda$.
+We give the full probability mass functions for the three parametric Poisson mixture models fitted in Section~\ref{sec:mixture_models}. In each case, the conditional model is $X \mid \Lambda = \lambda \sim \mathrm{Poisson}(\lambda)$; the models differ only in the mixing distribution assumed for $\Lambda$.
 
 \medskip
 
