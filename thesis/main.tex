@@ -94,14 +94,29 @@ An important concept for assessing how complete a sample is, is the notion of \e
 \end{equation}
 Intuitively, $f_1/n$ estimates the probability that the next sampled individual belongs to a species not yet observed, subtracting it from 1 gives the coverage. A coverage close to 1 indicates that most of the assemblage's individuals belong to species already detected, whereas a low coverage signals that many species remain unobserved.
 
+
 Chao and Jost~\cite{chaojost2012} proposed a bias-corrected version:
 \begin{equation}\label{eq:coverage_chaojost}
     \hat{C} = 1 - \frac{f_1}{n} \cdot 
     \frac{(n-1)\,f_1}{(n-1)\,f_1 + 2\,f_2}\,.
 \end{equation}
 
-(GIVE EXAMPLE OF COVERAGE VALUE FOR DIFFERENT SPEECHES - INTUITION FOR SCALE)
+
 This adjustment reduces the bias of the basic Turing estimator, particularly when singletons dominate the sample (i.e.\ when $f_1$ is large relative to $n$). Sample coverage will play an important role later, both as a diagnostic for the completeness of our speech samples and as the basis for coverage-based standardization when comparing samples of different sizes.
+
+\vspace{1em}
+
+Figure~\ref{fig:sample_coverage_examples} illustrates the scale of the coverage values in concrete examples. 
+A high value of \(\hat C\) indicates that most of the probability mass belongs to word types already seen in the sample. 
+A lower value indicates that a substantial part of the vocabulary is still represented only through rare types, especially singletons.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../code/intuition/sample_coverage_examples.png}
+    \caption{Examples of Turing sample coverage for several texts and speakers used in this thesis.}
+    \label{fig:sample_coverage_examples}
+\end{figure}
+
 
 \subsection{Parametric and nonparametric approaches}
 
@@ -112,11 +127,21 @@ A nonparametric model makes no assumption about the functional form of the under
 \subsection{Rarefaction, extrapolation, and standardization}
 
 When comparing species richness across multiple assemblages (for example, the vocabulary of two different speakers, or spoken versus written language from the same individual), a direct comparison of $S_{\mathrm{obs}}$ is misleading if the sample sizes differ, since larger samples will generally detect more species. Two standardization approaches are commonly used.
+
  
 \paragraph{Sample-size-based rarefaction and extrapolation.}
 Rarefaction asks: if we had drawn only $m < n$ individuals, how many species would we expect to observe? By subsampling from the reference sample, one constructs a \emph{rarefaction curve} that shows expected richness as a function of the sample size. Conversely, extrapolation projects the curve beyond the observed sample size, predicting how many additional species would be detected if sampling effort were increased~\cite{chaojost2012}.
 
-(FIGURE TO ILLUSTRATE)
+\vspace{1em}
+
+Figure~\ref{fig:rarefaction_extrapolation_medium_example} shows why raw observed richness is not directly comparable across samples of different size. Even for a fixed text, the expected number of observed word types changes substantially with the number of sampled tokens. Rarefaction and extrapolation therefore provide a common sampling-effort scale on which different assemblages can be compared.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../code/intuition/rarefaction_extrapolation_medium_example.png}
+    \caption{Sample-size-based rarefaction and extrapolation for one example text. The solid curve gives the expected observed richness for smaller sample sizes \(m<n\), the point marks the observed sample \((n,S_{\mathrm{obs}})\), and the dashed curve extrapolates richness up to twice the observed sample size.}
+    \label{fig:rarefaction_extrapolation_medium_example}
+\end{figure}
  
 \paragraph{Coverage-based standardization.}
 An alternative, proposed by Chao and Jost~\cite{chaojost2012}, standardizes samples not by size but by coverage. The rationale is that two samples of equal size may represent very different levels of completeness: a sample of $n = 5\,000$ tokens from a speaker with homogeneous word usage may achieve near-complete coverage, while the same $n$ from a speaker with a highly heterogeneous vocabulary may miss a substantial fraction of species. By comparing richness at equal coverage, one obtains a fairer comparison that accounts for the difficulty of each assemblage. We will use both approaches when comparing our spoken and written data in Section~\ref{sec:results}.
@@ -386,7 +411,7 @@ This sensitivity to the parametric form of $G$ motivates the nonparametric appro
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{mixture_shakespeare.png}
+    \includegraphics[width=\textwidth]{../code/intuition/mixture_shakespeare.png}
     \caption{Comparison of three parametric Poisson mixture models fitted to the Shakespeare corpus (25,700 observed types, 890,426 tokens). Left: fitted versus observed proportions for $x \geq 1$. Right: full mixture PMF including the extrapolated probability at $x = 0$ (highlighted). The goodness-of-fit summary is shown below the plots.}
     \label{fig:mixture_models}
 \end{figure}
@@ -507,7 +532,17 @@ where $\widehat{\mathrm{Var}}(\hat{\beta}_0)$ is the estimated variance of $\hat
         \widehat{\mathrm{Var}}(\hat{f}_0)
     \end{equation}
 
-(SHOW EXAMPLE)
+\vspace{1em}
+
+Figure~\ref{fig:breakaway_ratio_example} illustrates the extrapolation step in the Breakaway method. The observed points are the consecutive frequency ratios \(f_{j+1}/f_j\), computed from the abundance frequency counts. We can see the fitted smooth rational function and the fitted value at \(j=0\) estimates \(\hat{\beta}_0 = f_1/\hat f_0\), so the number of unseen types is obtained as \(\hat f_0 = f_1/\hat{\beta}_0\). The different curves show how the fit changes when more ratio terms are included.
+
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../code/intuition/breakaway_ratio_example.png}
+    \caption{Breakaway frequency-ratio regression for one example corpus item. Black points show the observed ratios \(f_{j+1}/f_j\). The colored curves are rational-function fits using ratios up to different maximum indices \(J\). Their extrapolated values at \(j=0\) determine \(\hat{\beta}_0\), and hence the estimate \(\hat f_0 = f_1/\hat{\beta}_0\).}
+    \label{fig:breakaway_ratio_example}
+\end{figure}
 
 \paragraph{Limitations.}
 As we have seen previously we have have no guarantee that the estimate is positive. If $\hat{\beta_0}$ is close to 0 or negative, The estimate $\hat{f_0} = f_1/\hat{\beta_0}$ will have a negative or very high estimate.\\
@@ -567,7 +602,17 @@ This single linear equation links $p(0)$ (the probability that a species goes en
 \]
 This is precisely what the Poisson mixture framework lacked: a structural constraint that identifies $p(0)$ from the observed data. The boundary problem is resolved not by penalizing mass near $\lambda = 0$, but by working with a model in which $p(0)$ is determined by the shape of the observed distribution. Once $p(0)$ is identified, the estimator $\hat{N} = \lfloor S_{\mathrm{obs}} / (1 - p(0)) \rfloor$ follows directly. This solves the problem of \emph{one cannot see what cannot be seen}.
 
-(EXPLANATORY PLOT WITH DIFFERENT VALUES FOR K WITH DIFFERENT FITTED CURVES)
+\vspace{1em}
+
+Figure~\ref{fig:k_monotonicity_examples} gives a visual intuition for the role of the parameter \(k\). We see that large values of \(k\) impose alternating-sign constraints, thus increasing \(k\) restricts the possible shapes of the abundance distribution, making the curve more structured.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{../code/intuition/k_monotonicity_examples.png}
+    \caption{Illustrative probability mass functions satisfying different levels of \(k\)-monotonicity. The \(k=1\) curve is a decreasing PMF, the \(k=2\) and \(k=4\) curves are \(k\)-monotone splines, and the \(k=\infty\) curve is a geometric PMF, which is completely monotone.}
+    \label{fig:k_monotonicity_examples}
+\end{figure}
+
 
 \subsubsection{Selection of \texorpdfstring{$k$}{k}}
 The value of $k$ controls the shape restriction, a larger k imposes more constraints  and therefore structure and pushes the support points of the NPMLE further from the left boundary. It is important to note that it does not necessarily produce a higher fitted probability at 0. Therefore, the estimate of $\hat{N}$ does not necessarily increase with $k$ \cite{CheeWang2016} .
@@ -744,8 +789,12 @@ G(z)
 
     \item \textbf{Corpus of Contemporary American English (COCA), Spoken Component}\\
     \url{https://www.english-corpora.org/coca-spoken.asp}
+
+    \item  \textbf{A collection of transcripts of real French dialogues from various sources, including parliamentary proceedings, interviews, debates, meetings, and free conversations. }
+    \url{https://huggingface.co/datasets/OpenLLM-France/Claire-Dialogue-French-0.1}
 \end{itemize}
 
+\clearpage
 \bibliographystyle{plain}
 \bibliography{references}
 \end{document}
