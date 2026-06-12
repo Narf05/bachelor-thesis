@@ -734,8 +734,6 @@ We first use the full Shakespeare corpus as a replication baseline for the estim
     \label{tab:results_shakespeare_frequency_table}
 \end{table}
 
-\paragraph{Table interpretation placeholder.}
-TODO: Compare this frequency spectrum with the published Shakespeare table. If the published table has different singleton and doubleton counts, explain whether this comes from a different source, tokenization, lemmatization, or preprocessing convention.
 
 \begin{table}[htbp]
     \centering
@@ -754,18 +752,18 @@ TODO: Compare this frequency spectrum with the published Shakespeare table. If t
     \label{tab:results_shakespeare_estimator_summary}
 \end{table}
 
-\paragraph{Table interpretation placeholder.}
-TODO: Explain the Shakespeare estimator table, especially the difference between lower-bound estimators and ACE, and mention that Breakaway is not stable for this full-corpus frequency spectrum.
+\paragraph{Interpretation placeholder.}
+We can see that the from the given estimators the ACE estimator is the most aggressive one, it gives the highest estimation of vocabulary richness of Shakespeare. And the Jackknife1 estimator gives the shortes.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{../results/figures/shakespeare_estimator_comparison.png}
-    \caption{Estimated vocabulary richness for the Shakespeare replication baseline, comparing the estimators implemented in the analysis pipeline.}
+    \caption{Estimated vocabulary richness for the Shakespeare replication baseline, comparing the estimators.}
     \label{fig:results_shakespeare_estimator_comparison}
 \end{figure}
 
 \paragraph{Interpretation placeholder.}
-TODO: Explain how the estimators compare on Shakespeare, which ones are conservative or aggressive, and whether the results look plausible relative to the published Shakespeare analyses.
+Breakaway has the highest Media $\hat{S}$ across all plays. It makes use of more frequency counts.
 
 \begin{figure}[htbp]
     \centering
@@ -775,7 +773,7 @@ TODO: Explain how the estimators compare on Shakespeare, which ones are conserva
 \end{figure}
 
 \paragraph{Interpretation placeholder.}
-TODO: Explain whether the Shakespeare curve is still increasing at the observed sample size and what the extrapolation suggests about unseen vocabulary.
+This Graph shows that when extrapolating the number of tokens sampled we follow a log-like function. The Chao1 estimator gives an estimation of roughly 7000 distinct types.
 
 \subsection{Corpus and language overview}
 
@@ -791,12 +789,12 @@ We next summarize the spoken and dialogue-based corpora used for the main multil
         French & clapi & 10813 & 160251286 & 1927 & 0.8104 \\
         German & dgd & 47 & 68141 & 1485 & 0.7782 \\
     \end{tabular}}
-    \caption{Language-level overview of the spoken/dialogue corpora used in the cross-language comparison. Shakespeare is excluded from this table.}
+    \caption{This is a language-level overview of the spoken corpora used in the cross-language comparison. We make sure to exclude Shakespeare since his written books where used for the analysis.}
     \label{tab:results_language_corpus_overview}
 \end{table}
 
 \paragraph{Table interpretation placeholder.}
-TODO: Explain the language-level corpus overview, especially the imbalance in number of units and total tokens.
+This table shows that there is an imbalance in the number of tokens per language. France has the highest one, then followed by english and then German. Even though English has a higher number of tokens, its mean coverage is smaller then the one of the German one by approximately 6 percent.
 
 \begin{table}[htbp]
     \centering
@@ -811,42 +809,33 @@ TODO: Explain the language-level corpus overview, especially the imbalance in nu
         SBCorpus & English & 46 & 55302 & 1156 & 1 & 5311 & 404 & 0.7930 \\
         Shakespeare & Shakespeare & 43 & 1780852 & 21547 & 362 & 890426 & 3561 & 0.9094 \\
     \end{tabular}}
-    \caption{Corpus-level overview. Shakespeare is shown for context as the written replication baseline, but is excluded from the spoken cross-language analysis.}
+    \caption{We show a corpus-level overview and Shakespeare is shown for context as the written replication baseline.}
     \label{tab:results_corpus_overview}
 \end{table}
 
 \paragraph{Table interpretation placeholder.}
-TODO: Explain the corpus-level table and point out which corpora dominate the data volume.
+The French corpus dominates across all corpuses since it has the highest number of tokens and we are only working with one french corpus. 
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{../results/figures/tokens_by_language.png}
-    \caption{Distribution of token counts by language for the spoken/dialogue corpora.}
+    \caption{Distribution of token counts by language for the spoken corpora. By unit we refer to one speaker file in the processed database and we use the log scale since token counts varu a lot.}
     \label{fig:results_tokens_by_language}
 \end{figure}
 
 \paragraph{Interpretation placeholder.}
-TODO: Explain the sample-size structure across languages and why unequal token counts matter for richness estimation.
+In the first plot we have the density on the y-axis since all languages dont have the same number of tokens and the french one would dominate the graph. In this way we can compare the three languages equally. The plot on the right depicts the tokens per unit for each Corpus and we can clearly see that CLAPI has the highest one.
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth]{../results/figures/sobs_by_corpus.png}
-    \caption{Observed vocabulary size by corpus.}
-    \label{fig:results_sobs_by_corpus}
-\end{figure}
-
-\paragraph{Interpretation placeholder.}
-TODO: Explain how observed vocabulary differs across corpora and why this should not yet be interpreted as total vocabulary richness.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{../results/figures/coverage_by_language.png}
-    \caption{Sample coverage by language for the spoken/dialogue corpora.}
+    \caption{Sample coverage by language for the spoken corpora.}
     \label{fig:results_coverage_by_language}
 \end{figure}
 
 \paragraph{Interpretation placeholder.}
-TODO: Explain what the coverage values imply about sample completeness and estimator uncertainty.
+The French language corpora has the highest sample coverage, this implies that it has the highest completeness. This implies that it has the lowest amount of word appearing only once.  
 
 \subsection{Per-language estimator results}
 
@@ -882,7 +871,7 @@ This section compares the richness estimates produced by the different estimator
 \end{table}
 
 \paragraph{Table interpretation placeholder.}
-TODO: Explain the per-language estimator table, including the large Breakaway failure counts.
+We can see that Breakaway fails quite often since it doesnt have enough consecutive nonzero frequency counts and a stable ratio-regression fit. If the fitted parameter is negative it will fail. We can see that when comparing the estimators estimations normalized they all give a very similar results across different languages. (SHow the numbers). Also as shown in the Figure 10 we can see the plots.
 
 \begin{figure}[htbp]
     \centering
@@ -891,9 +880,7 @@ TODO: Explain the per-language estimator table, including the large Breakaway fa
     \label{fig:results_estimator_boxplots_by_language}
 \end{figure}
 
-\paragraph{Interpretation placeholder.}
-TODO: Explain which estimators give similar estimates, which ones diverge, and whether the divergence differs by language.
-
+SHould I inlcude the following{
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{../results/figures/coverage_vs_ratio_english.png}
@@ -923,11 +910,11 @@ TODO: Explain how estimator extrapolation changes with coverage for French.
 
 \paragraph{Interpretation placeholder.}
 TODO: Explain how estimator extrapolation changes with coverage for German.
+}
 
 \subsection{Completely monotone and k-monotone model selection}
 
-The following figures document how the finite-$k$ and completely monotone shape-constrained estimates behave. These results should be interpreted as empirical support for, or against, using the completely monotone limit.
-
+The following figures document how the finite-$k$ and completely monotone shape-constrained estimates behave.
 \begin{table}[htbp]
     \centering
     \resizebox{\textwidth}{!}{
@@ -944,7 +931,7 @@ The following figures document how the finite-$k$ and completely monotone shape-
 \end{table}
 
 \paragraph{Table interpretation placeholder.}
-TODO: Explain whether the selected $k$ values support using the completely monotone limit.
+When fitting finite-k monote models, the data sticks with small/moderate k instead of pushing toward very large k. And at no point did the model kep choosing the maximum tested k. This meand that the CM behavior is only an additional model for comparison for this data and will not necesseraly be chosen as the best one.
 
 \begin{figure}[htbp]
     \centering
@@ -954,17 +941,8 @@ TODO: Explain whether the selected $k$ values support using the completely monot
 \end{figure}
 
 \paragraph{Interpretation placeholder.}
-TODO: Explain where the BIC minimum occurs and whether the selected $k$ values suggest low-order or high-order monotonicity.
+The selected values are moderate rather than minimal: $k^\ast=5$ for English, $k^\ast=6$ for French, $k^\ast=4$ for German, and $k^\ast=8$ for Shakespeare. This suggests that the data are not well described by very low-order monotonicity, but the optimum also does not occur at the largest tested value. Thus, the figure supports the use of moderately flexible finite-$k$ monotone models, while giving only limited evidence for treating the completely monotone model as a necessary limiting case.
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth]{../results/figures/cm_k_selection_histogram.png}
-    \caption{Distribution of selected $k$ values across corpora and languages.}
-    \label{fig:results_cm_k_selection_histogram}
-\end{figure}
-
-\paragraph{Interpretation placeholder.}
-TODO: Explain whether selected $k$ values concentrate near the maximum tested value or remain small.
 
 \begin{figure}[htbp]
     \centering
@@ -974,7 +952,7 @@ TODO: Explain whether selected $k$ values concentrate near the maximum tested va
 \end{figure}
 
 \paragraph{Interpretation placeholder.}
-TODO: Explain whether the completely monotone and finite-$k$ estimates agree, and what disagreement would imply.
+The comparison between the selected finite-$k^\ast$ monotone estimates and the completely monotone estimates shows almost perfect agreement. Nearly all points lie on the diagonal line and it means that both approaches produce the same estimated richness for the sampled units. This suggests that, at least for these data, the completely monotone approximation does not substantially change the estimated vocabulary size relative to the BIC-selected finite-$k$ model. If the points had deviated strongly from the diagonal, this would have indicated that the choice between finite-$k$ monotonicity and complete monotonicity materially affects the richness estimates.
 
 \subsection{Rarefaction and extrapolation}
 
@@ -983,22 +961,12 @@ Rarefaction and extrapolation curves show how observed vocabulary grows with sam
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{../results/figures/rarefaction_extrapolation_by_language.png}
-    \caption{Rarefaction and extrapolation curves for representative spoken/dialogue units in each language.}
+    \caption{Rarefaction and extrapolation curves for representative spoken units in each language.}
     \label{fig:results_rarefaction_extrapolation_by_language}
 \end{figure}
 
 \paragraph{Interpretation placeholder.}
-TODO: Explain whether the representative language curves are close to saturation or still rising strongly.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth]{../results/figures/rarefaction_language_combined.png}
-    \caption{Combined language-level rarefaction and extrapolation curves for the spoken/dialogue corpora.}
-    \label{fig:results_rarefaction_language_combined}
-\end{figure}
-
-\paragraph{Interpretation placeholder.}
-TODO: Explain how the combined language curves compare, while noting the effect of unequal corpus sizes.
+We can clearly see that all curves are not close to saturation and grow with the sample size. On top of that all of them aim towards the same expected number.
 
 \subsection{Cross-language comparison}
 
@@ -1029,22 +997,22 @@ This comparison uses only spoken and dialogue-based corpora. Shakespeare is excl
         German & Jackknife2 & 543.0 & 1111.3 & 568.3 & 0.7838 & 2.0642 \\
         German & Breakaway & 543.0 & 2500.3 & 1940.1 & 0.7838 & 5.2887 \\
     \end{tabular}}
-    \caption{Cross-language estimator summary for spoken/dialogue corpora only. Shakespeare is excluded.}
+    \caption{Cross-language estimator summary for spoken corpora only.}
     \label{tab:results_cross_language_estimator_summary}
 \end{table}
 
 \paragraph{Table interpretation placeholder.}
-TODO: Explain the cross-language table while being careful about sample-size and corpus-composition differences.
+TODO: Explain the cross-language table while being careful about sample-size and corpus-composition differences. Isnt this the same table as before?
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{../results/figures/cross_language_median_Shat.png}
-    \caption{Median estimated richness by language and estimator for the spoken/dialogue corpora.}
+    \caption{Median estimated richness by language and estimator for the spoken corpora.}
     \label{fig:results_cross_language_median_shat}
 \end{figure}
 
 \paragraph{Interpretation placeholder.}
-TODO: Explain the main cross-language differences and whether they appear consistent across estimators.
+The cross-language differences that appear constant across different estimators is that the French Median $\hat{S}$ scores higher then German and English. This isnt only due because French has a bigger corpora since the English corpora is larger then the German one and still scores lower then it.
 
 \begin{figure}[htbp]
     \centering
@@ -1054,17 +1022,8 @@ TODO: Explain the main cross-language differences and whether they appear consis
 \end{figure}
 
 \paragraph{Interpretation placeholder.}
-TODO: Explain how the ratio comparison changes the interpretation relative to raw estimated richness.
+When comparing the ratios and not the raw estimates we can see how it affects the results. The French corpora doesnt score as high anymore. This is mainly due to the fact that the number of estimated words doesnt grow linearly with the number of tokens but rather logarithmically.
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth]{../results/figures/cross_language_ratio_boxplot.png}
-    \caption{Distribution of estimated-to-observed richness ratios by estimator and language.}
-    \label{fig:results_cross_language_ratio_boxplot}
-\end{figure}
-
-\paragraph{Interpretation placeholder.}
-TODO: Explain which language-estimator combinations require the largest extrapolation beyond the observed vocabulary.
 
 \subsection{Estimator agreement and disagreement}
 
@@ -1112,12 +1071,13 @@ TODO: Explain which estimators are numerically stable and why failed estimates m
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{../results/figures/estimator_correlation_heatmap.png}
-    \caption{Correlation between estimator outputs across the spoken/dialogue corpora.}
+    \caption{Correlation between estimator outputs across the spoken corpora.}
     \label{fig:results_estimator_correlation_heatmap}
 \end{figure}
 
 \paragraph{Interpretation placeholder.}
-TODO: Explain which estimators agree most strongly and where disagreement is expected.
+Although the classical estimators are almost perfectly correlated, this should not be interpreted as evidence that they give the same estimates. The high correlations mainly reflect the shared dependence on sample size and observed vocabulary size. Therefore, agreement is better assessed using ratios or differences between estimators.
+
 
 \begin{figure}[htbp]
     \centering
@@ -1146,7 +1106,7 @@ TODO: Explain the relative scale of the estimator differences using Chao1 as a b
 Summarize findings, answer research questions, suggest future work.
 
 % --- after your conclusion section, before \bibliographystyle / \bibliography ---
-
+\newpage
 \appendix
 
 \section{Parametric mixture models}\label{app:parametric_models}
