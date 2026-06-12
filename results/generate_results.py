@@ -688,6 +688,171 @@ def section_6_3_per_language(est_df: pd.DataFrame) -> None:
 
 
 # ===========================================================================
+# Section 6.4 -- Completely monotone / k-monotone model selection
+# ===========================================================================
+
+def section_6_4_cm(meta: pd.DataFrame, fc_all: dict[str, dict[int, int]],
+                   sample_per_language: int = 15, k_max: int = 12) -> None:
+    print("\n--- Section 6.4 CM / k-monotone model selection ---")
+
+    from estimators.monotone import select_k, cm_estimator
+
+    spoken = meta[meta["is_spoken"]].copy()
+
+    # Take the top-N by token count per language (larger units are more stable)
+    sample_rows = []
+    for lang in LANGUAGE_ORDER:
+        sub = spoken[spoken["language"] == lang]
+        sub = sub[sub["s_obs"] >= 80]          # skip very small units
+        picked = sub.nlargest(sample_per_language, "n_tokens")
+        sample_rows.append(picked)
+
+    # Add all Shakespeare plays
+    shk = meta[meta["corpus_source"] == "shakespeare"]
+    shk = shk[shk["s_obs"] >= 80]
+    analysis_df = pd.concat(sample_rows + [shk], ignore_index=True).drop_duplicates("name")
+
+    print(f"  Running k-selection on {len(analysis_df)} units (k_max={k_max}) ...")
+
+    records = []
+    bic_curves: dict[str, pd.DataFrame] = {}   # saved for plotting
+
+    for _, row in analysis_df.iterrows():
+        fc = fc_all.get(row["name"], {})
+        if not fc:
+            continue
+        try:
+            res = select_k(fc, k_max=k_max, n_profile=15, s_max_factor=5.0)
+            records.append({
+                "name":           row["name"],
+                "corpus_source":  row["corpus_source"],
+                "language":       row["language"],
+                "n_tokens":       row["n_tokens"],
+                "s_obs":          row["s_obs"],
+                "k_star":         res["k_star"],
+                "S_hat_kstar":    res["S_hat_kstar"],
+                "S_hat_cm":       res["S_hat_cm"],
+                "diff":           (res["S_hat_cm"] - res["S_hat_kstar"])
+                                  if (res["S_hat_cm"] and res["S_hat_kstar"]) else None,
+            })
+            bic_curves[row["name"]] = res["results_df"]
+            lang_tag = row.get("language", row["corpus_source"])
+            print(f"    {row['name'][:40]:<40}  k*={res['k_star']}  "
+                  f"S_hat_cm={res['S_hat_cm']:.0f}" if res["S_hat_cm"] else
+                  f"    {row['name'][:40]:<40}  k*={res['k_star']}  S_hat_cm=nan")
+        except Exception as e:
+            print(f"  WARNING {row['name'][:30]}: {e}")
+
+    if not records:
+        print("  No results -- skipping 6.4 plots.")
+        return
+
+    table = pd.DataFrame(records)
+    _save_csv(table, "cm_kmonotone_selection")
+
+    # -- Plot 1: BIC vs k for one representative unit per language/corpus ----
+    rep_names: dict[str, str] = {}
+    for lang in LANGUAGE_ORDER:
+        sub = table[table["language"] == lang].dropna(subset=["k_star"])
+        if sub.empty:
+            continue
+        median_n = sub["n_tokens"].median()
+        rep_names[lang] = sub.loc[(sub["n_tokens"] - median_n).abs().idxmin(), "name"]
+
+    shk_sub = table[table["corpus_source"] == "shakespeare"].dropna(subset=["k_star"])
+    if not shk_sub.empty:
+        median_shk = shk_sub["n_tokens"].median()
+        rep_names["Shakespeare"] = shk_sub.loc[
+            (shk_sub["n_tokens"] - median_shk).abs().idxmin(), "name"]
+
+    panels = {k: v for k, v in rep_names.items() if v in bic_curves}
+    n_panels = len(panels)
+    if n_panels:
+        fig, axes = plt.subplots(1, n_panels, figsize=(4 * n_panels, 4), sharey=False)
+        if n_panels == 1:
+            axes = [axes]
+        for ax, (label, uname) in zip(axes, panels.items()):
+            df_bic = bic_curves[uname].dropna(subset=["BIC"])
+            color = PALETTE_LANG.get(label, "#888888")
+            ax.plot(df_bic["k"], df_bic["BIC"], marker="o", color=color, linewidth=1.8)
+            k_star_val = table.loc[table["name"] == uname, "k_star"].values
+            if len(k_star_val) and not np.isnan(k_star_val[0]):
+                ax.axvline(k_star_val[0], color="red", linestyle="--",
+                           linewidth=1.2, label=f"k* = {int(k_star_val[0])}")
+                ax.legend(fontsize=8)
+            ax.set_title(f"{label}\n{uname.split('__')[-1][:25]}", fontsize=9)
+            ax.set_xlabel("k (mixture components)")
+            ax.set_ylabel("BIC" if ax is axes[0] else "")
+
+        fig.suptitle("BIC vs k (representative units)", y=1.02)
+        fig.tight_layout()
+        _save_fig(fig, "cm_k_selection_bic")
+
+    # -- Plot 2: histogram of k* by language ----------------------------------
+    valid_table = table.dropna(subset=["k_star"])
+    if not valid_table.empty:
+        fig, ax = plt.subplots(figsize=(7, 4))
+        bins = range(1, k_max + 2)
+        for lang in LANGUAGE_ORDER + ["Shakespeare"]:
+            sub = valid_table[valid_table["language"] == lang]["k_star"] \
+                  if lang != "Shakespeare" \
+                  else valid_table[valid_table["corpus_source"] == "shakespeare"]["k_star"]
+            if sub.empty:
+                continue
+            ax.hist(sub, bins=bins, alpha=0.5, label=lang,
+                    color=PALETTE_LANG.get(lang, "#888888"), density=True)
+        ax.set_xlabel("BIC-selected k")
+        ax.set_ylabel("Density")
+        ax.set_title("Distribution of selected k by language/corpus")
+        ax.legend(fontsize=8)
+        _save_fig(fig, "cm_k_selection_histogram")
+
+    # -- Plot 3: CM vs k* scatter plot ----------------------------------------
+    valid2 = table.dropna(subset=["S_hat_cm", "S_hat_kstar"])
+    if not valid2.empty:
+        fig, ax = plt.subplots(figsize=(6, 5))
+        for lang in LANGUAGE_ORDER + ["Shakespeare"]:
+            if lang == "Shakespeare":
+                sub = valid2[valid2["corpus_source"] == "shakespeare"]
+            else:
+                sub = valid2[valid2["language"] == lang]
+            if sub.empty:
+                continue
+            ax.scatter(sub["S_hat_kstar"], sub["S_hat_cm"],
+                       color=PALETTE_LANG.get(lang, "#888"), alpha=0.65,
+                       s=20, label=lang)
+        lim = max(valid2[["S_hat_cm", "S_hat_kstar"]].max()) * 1.05
+        ax.plot([0, lim], [0, lim], "k--", linewidth=0.9)
+        ax.set_xlabel("$\\hat{S}$ (k* monotone)")
+        ax.set_ylabel("$\\hat{S}$ (CM, fine grid)")
+        ax.set_title("CM estimate vs k*-monotone estimate")
+        ax.legend(fontsize=8)
+        ax.set_xlim(0, lim); ax.set_ylim(0, lim)
+        _save_fig(fig, "cm_vs_kmonotone_scatter")
+
+    # -- Summary table by language ---------------------------------------------
+    summary_rows = []
+    for lang in LANGUAGE_ORDER + ["Shakespeare"]:
+        if lang == "Shakespeare":
+            sub = valid_table[valid_table["corpus_source"] == "shakespeare"]
+        else:
+            sub = valid_table[valid_table["language"] == lang]
+        if sub.empty:
+            continue
+        summary_rows.append({
+            "Language/Corpus": lang,
+            "N units":         len(sub),
+            "Median k*":       sub["k_star"].median(),
+            "Mean k*":         sub["k_star"].mean().round(1),
+            "k* = k_max (%)":  (100 * (sub["k_star"] == k_max).mean()).round(1),
+            "Median S_hat_cm": sub["S_hat_cm"].median().round(1) if "S_hat_cm" in sub else None,
+            "Median S_hat_kstar": sub["S_hat_kstar"].median().round(1),
+        })
+    if summary_rows:
+        _save_csv(pd.DataFrame(summary_rows), "cm_kmonotone_summary")
+
+
+# ===========================================================================
 # Section 6.5 -- Rarefaction and extrapolation curves
 # ===========================================================================
 
@@ -1001,6 +1166,11 @@ def main() -> None:
     section_6_1_shakespeare(meta, fc_all)
     section_6_2_overview(meta)
     section_6_3_per_language(est_df)
+
+    try:
+        section_6_4_cm(meta, fc_all, sample_per_language=15, k_max=12)
+    except Exception as e:
+        print(f"  WARNING: section 6.4 CM failed -- {e}")
 
     print("\n-- Section 6.5 rarefaction/extrapolation --")
     try:

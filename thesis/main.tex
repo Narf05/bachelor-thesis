@@ -709,12 +709,411 @@ For each speaker or character, we computed the abundance frequency counts $f_1, 
 
 \section{Results}\label{sec:results}
 
-\begin{itemize}
-    \item replicate Shakespeare analysis to have a baseline
-    \item apply other estimators
-    \item estimator comparisons
-    \item rarefaction/extrapolation curves
-\end{itemize}
+\subsection{Shakespeare replication baseline}
+
+We first use the Shakespeare corpus as a replication baseline for the estimators. This corpus is not used in the cross-language spoken-language comparison, since it is a written literary corpus rather than spoken language.
+
+\begin{table}[htbp]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{lrrrrrrr}
+        Estimator & Tokens $n$ & $S_{\mathrm{obs}}$ & $f_1$ & $f_2$ & Coverage & $\hat{S}$ & $\hat{S}/S_{\mathrm{obs}}$ \\
+        \hline
+        Chao1 & 21547 & 3561 & 1995 & 562 & 0.9094 & 7020.1 & 1.9954 \\
+        iChao1 & 21547 & 3561 & 1995 & 562 & 0.9094 & 7615.2 & 2.1718 \\
+        ACE & 21547 & 3561 & 1995 & 562 & 0.9094 & 12905.6 & 3.6513 \\
+        Jackknife1 & 21547 & 3561 & 1995 & 562 & 0.9094 & 5390.8 & 1.5255 \\
+        Jackknife2 & 21547 & 3561 & 1995 & 562 & 0.9094 & 6805.5 & 1.9313 \\
+        Breakaway & 21547 & 3561 & 1995 & 562 & 0.9094 & 28689.2 & 8.3948 \\
+    \end{tabular}}
+    \caption{Summary of Shakespeare replication estimates. Values are medians across Shakespeare units; the full generated table is stored in \texttt{results/tables/shakespeare\_estimator\_table.csv}.}
+    \label{tab:results_shakespeare_estimator_summary}
+\end{table}
+
+\paragraph{Table interpretation placeholder.}
+TODO: Explain the Shakespeare estimator table, especially the gap between lower-bound estimators and Breakaway.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/shakespeare_estimator_comparison.png}
+    \caption{Estimated vocabulary richness for the Shakespeare replication baseline, comparing the estimators implemented in the analysis pipeline.}
+    \label{fig:results_shakespeare_estimator_comparison}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain how the estimators compare on Shakespeare, which ones are conservative or aggressive, and whether the results look plausible relative to the published Shakespeare analyses.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/rarefaction_extrapolation_shakespeare.png}
+    \caption{Rarefaction and extrapolation curve for a representative Shakespeare unit.}
+    \label{fig:results_rarefaction_extrapolation_shakespeare}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain whether the Shakespeare curve is still increasing at the observed sample size and what the extrapolation suggests about unseen vocabulary.
+
+\subsection{Corpus and language overview}
+
+We next summarize the spoken and dialogue-based corpora used for the main multilingual analysis. In the cross-language comparison, English consists of IMSDb, BNC, and the Santa Barbara Corpus; French consists of CLAPI; and German consists of DGD.
+
+\begin{table}[htbp]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{llrrrr}
+        Language & Corpora included & Number of units & Total tokens & Median tokens & Mean coverage \\
+        \hline
+        English & bnc, imsdb, sbcorpus & 5517 & 6675363 & 815 & 0.7197 \\
+        French & clapi & 10813 & 160251286 & 1927 & 0.8104 \\
+        German & dgd & 47 & 68141 & 1485 & 0.7782 \\
+    \end{tabular}}
+    \caption{Language-level overview of the spoken/dialogue corpora used in the cross-language comparison. Shakespeare is excluded from this table.}
+    \label{tab:results_language_corpus_overview}
+\end{table}
+
+\paragraph{Table interpretation placeholder.}
+TODO: Explain the language-level corpus overview, especially the imbalance in number of units and total tokens.
+
+\begin{table}[htbp]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{llrrrrrrr}
+        Corpus & Language & Units & Total tokens & Median tokens & Min tokens & Max tokens & Median $S_{\mathrm{obs}}$ & Median coverage \\
+        \hline
+        BNC & English & 136 & 312275 & 692 & 2 & 36869 & 282 & 0.7947 \\
+        CLAPI & French & 10813 & 160251286 & 1927 & 347 & 2757857 & 585 & 0.8210 \\
+        DGD & German & 47 & 68141 & 1485 & 423 & 2392 & 543 & 0.7838 \\
+        IMSDb & English & 5335 & 6307786 & 814 & 61 & 9529 & 357 & 0.7185 \\
+        SBCorpus & English & 46 & 55302 & 1156 & 1 & 5311 & 404 & 0.7930 \\
+        Shakespeare & Shakespeare & 43 & 1780852 & 21547 & 362 & 890426 & 3561 & 0.9094 \\
+    \end{tabular}}
+    \caption{Corpus-level overview. Shakespeare is shown for context as the written replication baseline, but is excluded from the spoken cross-language analysis.}
+    \label{tab:results_corpus_overview}
+\end{table}
+
+\paragraph{Table interpretation placeholder.}
+TODO: Explain the corpus-level table and point out which corpora dominate the data volume.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/tokens_by_language.png}
+    \caption{Distribution of token counts by language for the spoken/dialogue corpora.}
+    \label{fig:results_tokens_by_language}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain the sample-size structure across languages and why unequal token counts matter for richness estimation.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/sobs_by_corpus.png}
+    \caption{Observed vocabulary size by corpus.}
+    \label{fig:results_sobs_by_corpus}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain how observed vocabulary differs across corpora and why this should not yet be interpreted as total vocabulary richness.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/coverage_by_language.png}
+    \caption{Sample coverage by language for the spoken/dialogue corpora.}
+    \label{fig:results_coverage_by_language}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain what the coverage values imply about sample completeness and estimator uncertainty.
+
+\subsection{Per-language estimator results}
+
+This section compares the richness estimates produced by the different estimators within each language.
+
+\begin{table}[htbp]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{llrrrrr}
+        Language & Estimator & Mean $\hat{S}$ & Median $\hat{S}$ & IQR $\hat{S}$ & Median $\hat{S}/S_{\mathrm{obs}}$ & Failed \\
+        \hline
+        English & Chao1 & 1015.4 & 885.9 & 546.6 & 2.3519 & 0 \\
+        English & iChao1 & 1111.7 & 968.4 & 595.0 & 2.5719 & 0 \\
+        English & ACE & 1771.5 & 1523.0 & 994.7 & 4.0940 & 10 \\
+        English & Jackknife1 & 694.8 & 585.6 & 378.7 & 1.6352 & 0 \\
+        English & Jackknife2 & 901.2 & 764.7 & 486.2 & 2.1257 & 2 \\
+        English & Breakaway & 3320.0 & 1927.2 & 1880.0 & 5.2128 & 2764 \\
+        French & Chao1 & 2721.7 & 1377.2 & 1968.9 & 2.1066 & 0 \\
+        French & iChao1 & 2960.7 & 1507.5 & 2155.8 & 2.3069 & 0 \\
+        French & ACE & 4990.2 & 2443.5 & 3514.4 & 3.8163 & 0 \\
+        French & Jackknife1 & 2155.6 & 928.8 & 1400.0 & 1.5676 & 0 \\
+        French & Jackknife2 & 2677.4 & 1200.7 & 1806.1 & 2.0035 & 0 \\
+        French & Breakaway & 22309.1 & 3249.9 & 7208.9 & 4.9321 & 5516 \\
+        German & Chao1 & 1163.3 & 1269.4 & 406.5 & 2.2451 & 0 \\
+        German & iChao1 & 1269.6 & 1359.3 & 438.1 & 2.4446 & 0 \\
+        German & ACE & 2075.6 & 2188.3 & 811.5 & 4.0295 & 0 \\
+        German & Jackknife1 & 808.8 & 855.8 & 227.5 & 1.6027 & 0 \\
+        German & Jackknife2 & 1045.6 & 1111.3 & 312.8 & 2.0642 & 0 \\
+        German & Breakaway & 5746.8 & 2500.3 & 2619.9 & 5.2887 & 20 \\
+    \end{tabular}}
+    \caption{Per-language estimator summary for the spoken/dialogue corpora.}
+    \label{tab:results_per_language_estimator_summary}
+\end{table}
+
+\paragraph{Table interpretation placeholder.}
+TODO: Explain the per-language estimator table, including the large Breakaway failure counts.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/estimator_boxplots_by_language.png}
+    \caption{Distribution of estimated richness by estimator and language.}
+    \label{fig:results_estimator_boxplots_by_language}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain which estimators give similar estimates, which ones diverge, and whether the divergence differs by language.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/coverage_vs_ratio_english.png}
+    \caption{Coverage versus estimated-to-observed richness ratio for English spoken/dialogue corpora.}
+    \label{fig:results_coverage_vs_ratio_english}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain how estimator extrapolation changes with coverage for English.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/coverage_vs_ratio_french.png}
+    \caption{Coverage versus estimated-to-observed richness ratio for the French spoken corpus.}
+    \label{fig:results_coverage_vs_ratio_french}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain how estimator extrapolation changes with coverage for French.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/coverage_vs_ratio_german.png}
+    \caption{Coverage versus estimated-to-observed richness ratio for the German spoken corpus.}
+    \label{fig:results_coverage_vs_ratio_german}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain how estimator extrapolation changes with coverage for German.
+
+\subsection{Completely monotone and k-monotone model selection}
+
+The following figures document how the finite-$k$ and completely monotone shape-constrained estimates behave. These results should be interpreted as empirical support for, or against, using the completely monotone limit.
+
+\begin{table}[htbp]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{lrrrrr}
+        Language/Corpus & Units & Median $k^\ast$ & Mean $k^\ast$ & $k^\ast = k_{\max}$ (\%) & Median $\hat{S}_{CM}$ \\
+        \hline
+        English & 15 & 5.0 & 5.0 & 0.0 & 1707.0 \\
+        French & 15 & 6.0 & 6.0 & 0.0 & 17525.0 \\
+        German & 15 & 4.0 & 4.1 & 0.0 & 605.0 \\
+        Shakespeare & 43 & 8.0 & 7.3 & 0.0 & 3390.0 \\
+    \end{tabular}}
+    \caption{Summary of selected finite-$k$ monotone and completely monotone estimates. The full selection table is stored in \texttt{results/tables/cm\_kmonotone\_selection.csv}.}
+    \label{tab:results_cm_kmonotone_summary}
+\end{table}
+
+\paragraph{Table interpretation placeholder.}
+TODO: Explain whether the selected $k$ values support using the completely monotone limit.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/cm_k_selection_bic.png}
+    \caption{BIC values across candidate values of $k$ for representative units.}
+    \label{fig:results_cm_k_selection_bic}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain where the BIC minimum occurs and whether the selected $k$ values suggest low-order or high-order monotonicity.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/cm_k_selection_histogram.png}
+    \caption{Distribution of selected $k$ values across corpora and languages.}
+    \label{fig:results_cm_k_selection_histogram}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain whether selected $k$ values concentrate near the maximum tested value or remain small.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/cm_vs_kmonotone_scatter.png}
+    \caption{Comparison between completely monotone estimates and selected finite-$k$ monotone estimates.}
+    \label{fig:results_cm_vs_kmonotone_scatter}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain whether the completely monotone and finite-$k$ estimates agree, and what disagreement would imply.
+
+\subsection{Rarefaction and extrapolation}
+
+Rarefaction and extrapolation curves show how observed vocabulary grows with sampling effort and how much additional vocabulary is expected beyond the observed sample.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/rarefaction_extrapolation_by_language.png}
+    \caption{Rarefaction and extrapolation curves for representative spoken/dialogue units in each language.}
+    \label{fig:results_rarefaction_extrapolation_by_language}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain whether the representative language curves are close to saturation or still rising strongly.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/rarefaction_language_combined.png}
+    \caption{Combined language-level rarefaction and extrapolation curves for the spoken/dialogue corpora.}
+    \label{fig:results_rarefaction_language_combined}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain how the combined language curves compare, while noting the effect of unequal corpus sizes.
+
+\subsection{Cross-language comparison}
+
+This comparison uses only spoken and dialogue-based corpora. Shakespeare is excluded here because it is a written literary corpus and serves only as the replication baseline in the first results subsection.
+
+\begin{table}[htbp]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{llrrrrr}
+        Language & Estimator & Median $S_{\mathrm{obs}}$ & Median $\hat{S}$ & Median $\hat{f}_0$ & Median coverage & Median $\hat{S}/S_{\mathrm{obs}}$ \\
+        \hline
+        English & Chao1 & 357.0 & 885.9 & 520.1 & 0.7194 & 2.3519 \\
+        English & iChao1 & 357.0 & 968.4 & 605.8 & 0.7194 & 2.5719 \\
+        English & ACE & 357.0 & 1523.0 & 1161.7 & 0.7194 & 4.0940 \\
+        English & Jackknife1 & 357.0 & 585.6 & 228.2 & 0.7194 & 1.6352 \\
+        English & Jackknife2 & 357.0 & 764.7 & 405.9 & 0.7194 & 2.1257 \\
+        English & Breakaway & 357.0 & 1927.2 & 1554.4 & 0.7194 & 5.2128 \\
+        French & Chao1 & 585.0 & 1377.2 & 797.9 & 0.8210 & 2.1066 \\
+        French & iChao1 & 585.0 & 1507.5 & 929.2 & 0.8210 & 2.3069 \\
+        French & ACE & 585.0 & 2443.5 & 1855.0 & 0.8210 & 3.8163 \\
+        French & Jackknife1 & 585.0 & 928.8 & 342.8 & 0.8210 & 1.5676 \\
+        French & Jackknife2 & 585.0 & 1200.7 & 614.5 & 0.8210 & 2.0035 \\
+        French & Breakaway & 585.0 & 3249.9 & 2611.2 & 0.8210 & 4.9321 \\
+        German & Chao1 & 543.0 & 1269.4 & 739.4 & 0.7838 & 2.2451 \\
+        German & iChao1 & 543.0 & 1359.3 & 831.2 & 0.7838 & 2.4446 \\
+        German & ACE & 543.0 & 2188.3 & 1645.3 & 0.7838 & 4.0295 \\
+        German & Jackknife1 & 543.0 & 855.8 & 312.8 & 0.7838 & 1.6027 \\
+        German & Jackknife2 & 543.0 & 1111.3 & 568.3 & 0.7838 & 2.0642 \\
+        German & Breakaway & 543.0 & 2500.3 & 1940.1 & 0.7838 & 5.2887 \\
+    \end{tabular}}
+    \caption{Cross-language estimator summary for spoken/dialogue corpora only. Shakespeare is excluded.}
+    \label{tab:results_cross_language_estimator_summary}
+\end{table}
+
+\paragraph{Table interpretation placeholder.}
+TODO: Explain the cross-language table while being careful about sample-size and corpus-composition differences.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/cross_language_median_Shat.png}
+    \caption{Median estimated richness by language and estimator for the spoken/dialogue corpora.}
+    \label{fig:results_cross_language_median_shat}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain the main cross-language differences and whether they appear consistent across estimators.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/coverage_standardized_language_comparison.png}
+    \caption{Median estimated-to-observed richness ratio by language and estimator.}
+    \label{fig:results_coverage_standardized_language_comparison}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain how the ratio comparison changes the interpretation relative to raw estimated richness.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/cross_language_ratio_boxplot.png}
+    \caption{Distribution of estimated-to-observed richness ratios by estimator and language.}
+    \label{fig:results_cross_language_ratio_boxplot}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain which language-estimator combinations require the largest extrapolation beyond the observed vocabulary.
+
+\subsection{Estimator agreement and disagreement}
+
+Finally, we compare the estimators directly across all spoken/dialogue corpora.
+
+\begin{table}[htbp]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{lrrrrl}
+        Estimator & Mean ratio & Median ratio & IQR & Failure rate & Typical behavior \\
+        \hline
+        Chao1 & 2.2673 & 2.2119 & 0.7028 & 0.0 & Lower bound via $f_1/f_2$ ratio \\
+        iChao1 & 2.4760 & 2.4246 & 0.7789 & 0.0 & Tighter lower bound using $f_3/f_4$ \\
+        ACE & 3.9731 & 3.9421 & 0.9818 & 0.1 & Heterogeneity-corrected lower bound \\
+        Jackknife1 & 1.5790 & 1.5998 & 0.1413 & 0.0 & Delete-one jackknife \\
+        Jackknife2 & 2.0236 & 2.0624 & 0.2837 & 0.0 & Delete-two jackknife \\
+        Breakaway & 13.6129 & 5.0446 & 3.8501 & 50.7 & Ratio-regression; unstable for small $n$ \\
+    \end{tabular}}
+    \caption{Global estimator behavior across all spoken/dialogue corpora. Ratios are $\hat{S}/S_{\mathrm{obs}}$.}
+    \label{tab:results_estimator_summary_global}
+\end{table}
+
+\paragraph{Table interpretation placeholder.}
+TODO: Explain the global estimator behavior table, especially the contrast between stable lower-bound estimators and Breakaway.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lrrr}
+        Estimator & Total units & Failed/undefined & Failure rate (\%) \\
+        \hline
+        Chao1 & 16374 & 0 & 0.0 \\
+        iChao1 & 16374 & 0 & 0.0 \\
+        ACE & 16374 & 10 & 0.1 \\
+        Jackknife1 & 16374 & 0 & 0.0 \\
+        Jackknife2 & 16374 & 2 & 0.0 \\
+        Breakaway & 16374 & 8300 & 50.7 \\
+    \end{tabular}
+    \caption{Estimator failure and undefined-output summary for spoken/dialogue corpora.}
+    \label{tab:results_estimator_failure_summary}
+\end{table}
+
+\paragraph{Table interpretation placeholder.}
+TODO: Explain which estimators are numerically stable and why failed estimates matter for interpretation.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/estimator_correlation_heatmap.png}
+    \caption{Correlation between estimator outputs across the spoken/dialogue corpora.}
+    \label{fig:results_estimator_correlation_heatmap}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain which estimators agree most strongly and where disagreement is expected.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/estimator_ratio_to_chao1.png}
+    \caption{Difference between each estimator and Chao1 across the spoken/dialogue corpora.}
+    \label{fig:results_estimator_difference_to_chao1}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain which estimators lie above or below Chao1 and how large the differences are.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../results/figures/estimator_ratio_over_chao1.png}
+    \caption{Ratio between each estimator and Chao1 across the spoken/dialogue corpora.}
+    \label{fig:results_estimator_ratio_over_chao1}
+\end{figure}
+
+\paragraph{Interpretation placeholder.}
+TODO: Explain the relative scale of the estimator differences using Chao1 as a baseline.
 
 \section{Discussion}\label{sec:discussion}
 

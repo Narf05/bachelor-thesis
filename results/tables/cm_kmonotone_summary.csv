@@ -1,0 +1,5 @@
+Language/Corpus,N units,Median k*,Mean k*,k* = k_max (%),Median S_hat_cm,Median S_hat_kstar
+English,15,5.0,5.0,0.0,1707.0,1707.0
+French,15,6.0,6.0,0.0,17525.0,17525.0
+German,15,4.0,4.1,0.0,605.0,605.0
+Shakespeare,43,8.0,7.3,0.0,3390.0,3390.0
