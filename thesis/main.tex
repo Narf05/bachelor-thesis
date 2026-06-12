@@ -734,7 +734,7 @@ We first use the full Shakespeare corpus as a replication baseline for the estim
     \label{tab:results_shakespeare_frequency_table}
 \end{table}
 
-\paragraph{Interpretation.}
+\paragraph{Interpretation (Table~\ref{tab:results_shakespeare_frequency_table}).}
 The frequency spectrum shows the typical long-tailed structure of word-frequency data. A large number of word types occur only once or twice, while progressively fewer types occur at higher frequencies. This is important because most richness estimators rely heavily on the low-frequency counts, especially $f_1$ and $f_2$.
 
 \begin{table}[htbp]
@@ -754,7 +754,7 @@ The frequency spectrum shows the typical long-tailed structure of word-frequency
     \label{tab:results_shakespeare_estimator_summary}
 \end{table}
 
-\paragraph{Interpretation.}
+\paragraph{Interpretation (Table~\ref{tab:results_shakespeare_estimator_summary}).}
 The classical lower-bound estimators give in total between 35,000 and 41,500 types, while ACE gives a substantially larger estimate of about 70,900 types. This difference reflects the fact that ACE includes an explicit heterogeneity correction for the rare part of the frequency spectrum. Breakaway is not reported for the full Shakespeare corpus because the fitted extrapolation parameter was negative, making the estimated number of unseen types undefined.
 
 \begin{figure}[htbp]
@@ -764,8 +764,8 @@ The classical lower-bound estimators give in total between 35,000 and 41,500 typ
     \label{fig:results_rarefaction_extrapolation_shakespeare}
 \end{figure}
 
-\paragraph{Interpretation.}
-The curve rises quickly at small sample sizes and then begins to flatten, but it has not fully saturated at the observed sample size. And it has a log-like shape. From there it follows that that additional sampling would still be expected to reveal new word types at a slower rate. The extrapolated part should be read as a model-based projection rather than as an observed quantity.
+\paragraph{Interpretation (Figure~\ref{fig:results_rarefaction_extrapolation_shakespeare}).}
+The curve rises steeply at small sample sizes and then begins to flatten, following a roughly logarithmic shape, but has not fully saturated at the observed sample size. Additional sampling would therefore still be expected to reveal new word types, albeit at a diminishing rate. The extrapolated portion should be read as a model-based projection rather than as an observed quantity.
 
 \subsection{Corpus and language overview}
 
@@ -781,12 +781,12 @@ We next summarize the spoken and dialogue-based corpora used for the main multil
         French & clapi & 10813 & 160251286 & 1927 & 0.8104 \\
         German & dgd & 47 & 68141 & 1485 & 0.7782 \\
     \end{tabular}}
-    \caption{This is a language-level overview of the spoken corpora used in the cross-language comparison. We make sure to exclude Shakespeare since his written books where used for the analysis.}
+    \caption{Language-level overview of the spoken corpora used in the cross-language comparison. Shakespeare is excluded because it is a written literary corpus.}
     \label{tab:results_language_corpus_overview}
 \end{table}
 
-\paragraph{Interpretation.}
-This table shows that there is an imbalance in the number of tokens per language. France has the highest one, then followed by english and then German. Even though English has a higher number of tokens, its mean coverage is smaller then the one of the German one by approximately 6 percent. Therefore, later comparisons should use normalized quantities, such as $\hat{S}/S_{\mathrm{obs}}$ and coverage, instead of relying only on raw estimated richness.
+\paragraph{Interpretation (Table~\ref{tab:results_language_corpus_overview}).}
+This table shows that there is an imbalance in the number of tokens per language. French has the highest, followed by English and then German. Even though English has a higher number of tokens, its mean coverage is smaller than that of German by approximately 6 percent. Therefore, later comparisons should use normalized quantities, such as $\hat{S}/S_{\mathrm{obs}}$ and coverage, instead of relying only on raw estimated richness.
 
 
 \begin{table}[htbp]
@@ -802,23 +802,22 @@ This table shows that there is an imbalance in the number of tokens per language
         SBCorpus & English & 46 & 55302 & 1156 & 1 & 5311 & 404 & 0.7930 \\
         Shakespeare & Shakespeare & 43 & 1780852 & 21547 & 362 & 890426 & 3561 & 0.9094 \\
     \end{tabular}}
-    \caption{We show a corpus-level overview and Shakespeare is shown for context as the written replication baseline.}
+    \caption{Corpus-level overview of all data sources. Shakespeare is included for context as the written replication baseline and is not part of the spoken-language comparison.}
     \label{tab:results_corpus_overview}
 \end{table}
 
-\paragraph{Interpretation.}
+\paragraph{Interpretation (Table~\ref{tab:results_corpus_overview}).}
 At the corpus level, CLAPI dominates the total amount of data, while IMSDb contributes most of the English units. The table also shows that some corpora contain very small units, which can make richness estimation unstable. Shakespeare is included only for context and should not be interpreted as part of the spoken-language comparison.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{../results/figures/tokens_by_language.png}
-    \caption{Distribution of token counts by language for the spoken corpora. By unit we refer to one speaker file in the processed database and we use the log scale since token counts varu a lot.}
+    \caption{Distribution of token counts by language for the spoken corpora. Each unit corresponds to one speaker file in the processed database. The log scale is used because token counts span several orders of magnitude.}
     \label{fig:results_tokens_by_language}
 \end{figure}
 
-\paragraph{Interpretation.}
-In the first plot we have the density on the y-axis since all languages dont have the same number of tokens and the french one would dominate the graph. In this way we can compare the three languages equally. The plot on the right depicts the tokens per unit for each Corpus and we can clearly see that CLAPI has the highest one.
-The log scale is useful because the number of tokens per unit varies over several orders of magnitude. The density view compares the shape of each language's token-count distribution, while the boxplot shows how the distributions differ by corpus. This confirms that sample size is a major confounder for all later richness comparisons.
+\paragraph{Interpretation (Figure~\ref{fig:results_tokens_by_language}).}
+The left panel uses a density y-axis so that French, which contributes far more units than the other languages, does not dominate the display; this allows the three languages to be compared on equal footing. The right panel shows token counts per unit by corpus, where CLAPI has the highest median by a large margin. Together the two panels confirm that sample size varies substantially across languages and corpora, and is therefore a major confounder for all later richness comparisons.
 
 
 \begin{figure}[htbp]
@@ -828,8 +827,8 @@ The log scale is useful because the number of tokens per unit varies over severa
     \label{fig:results_coverage_by_language}
 \end{figure}
 
-\paragraph{Interpretation.}
-The French language corpora has the highest sample coverage, this implies that it has the highest completeness. And from that it follows it has the lowest amount of word appearing only once.  
+\paragraph{Interpretation (Figure~\ref{fig:results_coverage_by_language}).}
+French has the highest sample coverage across all three languages, indicating that its observed sample is the most complete relative to the estimated total vocabulary. Consequently, French also has the lowest proportion of word types appearing only once, since high coverage is directly linked to a smaller singleton fraction.
 
 \begin{table}[htbp]
     \centering
@@ -845,9 +844,8 @@ The French language corpora has the highest sample coverage, this implies that i
     \label{tab:results_language_frequency_spectrum_summary}
 \end{table}
 
-\paragraph{Interpretation.} 
-The singleton proportions support the coverage interpretation. French has the smallest singleton share relative to observed vocabulary, while German has the largest. This helps explain why German requires more extrapolation despite having a smaller total corpus.
-Higher coverage means that a smaller fraction of the next sampled tokens is expected to belong to previously unseen word types. Thus, lower coverage corpora require stronger extrapolation, while higher coverage corpora are closer to being complete with respect to their observed sampling frame.
+\paragraph{Interpretation (Table~\ref{tab:results_language_frequency_spectrum_summary}).}
+The singleton proportions reinforce the coverage picture. French has the smallest singleton share relative to observed vocabulary ($f_1/S_{\mathrm{obs}} = 0.34$), while German has the largest ($0.56$). A higher singleton fraction means that a larger share of the next sampled tokens is expected to belong to previously unseen types, which implies lower coverage and stronger required extrapolation. This explains why German requires the most extrapolation despite having the smallest total corpus.
 
 \subsection{Per-language estimator results}
 
@@ -882,8 +880,8 @@ This section compares the richness estimates produced by the different estimator
     \label{tab:results_per_language_estimator_summary}
 \end{table}
 
-\paragraph{Interpretation.}
-We can see that Breakaway fails quite often since it doesnt have enough consecutive nonzero frequency counts and a stable ratio-regression fit. If the fitted parameter is negative it will fail. We can see that when comparing the estimators estimations normalized they all give a very similar results across different languages.  Also as shown in the Figure 10 we can see the plots. Across all three languages, Jackknife1 is the most conservative estimator, Chao1 and Jackknife2 are intermediate, ACE is more aggressive, and Breakaway has the largest median ratio among the successful fits. The normalized ratios are fairly similar across languages: for example, Chao1 gives median ratios around 2.1--2.35, ACE around 3.8--4.1, and Breakaway around 4.9--5.3. This suggests that estimator choice affects the result more strongly than language alone.
+\paragraph{Interpretation (Table~\ref{tab:results_per_language_estimator_summary} and Figure~\ref{fig:results_estimator_boxplots_by_language}).}
+Breakaway fails quite often because it does not have enough consecutive nonzero frequency counts for a stable ratio-regression fit; when the fitted parameter is negative it is undefined. When comparing normalized estimates across estimators, the ratios are broadly similar across languages, as also visible in Figure~\ref{fig:results_estimator_boxplots_by_language}. Across all three languages, Jackknife1 is the most conservative estimator, Chao1 and Jackknife2 are intermediate, ACE is more aggressive, and Breakaway has the largest median ratio among the successful fits. The normalized ratios are fairly similar across languages: for example, Chao1 gives median ratios around 2.1--2.35, ACE around 3.8--4.1, and Breakaway around 4.9--5.3. This suggests that estimator choice affects the result more strongly than language alone.
 
 \begin{figure}[htbp]
     \centering
@@ -911,18 +909,18 @@ The following figures document how the finite-$k$ and completely monotone shape-
     \label{tab:results_cm_kmonotone_summary}
 \end{table}
 
-\paragraph{Interpretation.}
-When fitting finite-k monote models, the data sticks with small/moderate k instead of pushing toward very large k. And at no point did the model kep choosing the maximum tested k. This means that the CM behavior is only an additional model for comparison for this data and will not necesseraly be chosen as the best one.  Therefore, the completely monotone model is useful as a limiting comparison, but the BIC selection does not by itself prove that complete monotonicity is required.
+\paragraph{Interpretation (Table~\ref{tab:results_cm_kmonotone_summary}).}
+Across all languages and corpora, the AIC-selected $k^\ast$ is small to moderate and never reaches the maximum tested value. This means the data do not push toward the completely monotone limit on their own: the finite-$k$ model is adequate and complete monotonicity is not required by the selection criterion. The completely monotone model is therefore useful as a theoretical benchmark, but should not be treated as the uniquely correct choice for these data.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{../results/figures/cm_k_selection_bic.png}
-    \caption{BIC values across candidate values of $k$ for representative units.}
+    \caption{AIC values across candidate values of $k$ for representative units.}
     \label{fig:results_cm_k_selection_bic}
 \end{figure}
 
-\paragraph{Interpretation.}
-The selected values are moderate rather than minimal: $k^\ast=5$ for English, $k^\ast=6$ for French, $k^\ast=4$ for German, and $k^\ast=8$ for Shakespeare. This suggests that the data are not well described by very low-order monotonicity, but the optimum also does not occur at the largest tested value. Thus, the figure supports the use of moderately flexible finite-$k$ monotone models, while giving only limited evidence for treating the completely monotone model as a necessary limiting case. The steep decrease in BIC for small values of $k$ shows that increasing the order of monotonicity initially improves the fit substantially. After the selected value, the curve becomes almost flat, so additional complexity gives little improvement and is penalized by BIC.
+\paragraph{Interpretation (Figure~\ref{fig:results_cm_k_selection_bic}).}
+The selected values are moderate rather than minimal: $k^\ast=5$ for English, $k^\ast=6$ for French, $k^\ast=4$ for German, and $k^\ast=8$ for Shakespeare. This suggests that the data are not well described by very low-order monotonicity, but the optimum also does not occur at the largest tested value. Thus, the figure supports the use of moderately flexible finite-$k$ monotone models, while giving only limited evidence for treating the completely monotone model as a necessary limiting case. The steep decrease in AIC for small values of $k$ shows that increasing the order of monotonicity initially improves the fit substantially. After the selected value, the curve becomes almost flat, so additional complexity gives little improvement and is penalized by AIC.
 
 
 \begin{figure}[htbp]
@@ -932,8 +930,8 @@ The selected values are moderate rather than minimal: $k^\ast=5$ for English, $k
     \label{fig:results_cm_vs_kmonotone_scatter}
 \end{figure}
 
-\paragraph{Interpretation.}
-The comparison between the selected finite-$k^\ast$ monotone estimates and the completely monotone estimates shows almost perfect agreement. Nearly all points lie on the diagonal line and it means that both approaches produce the same estimated richness for the sampled units. This suggests that, at least for these data, the completely monotone approximation does not substantially change the estimated vocabulary size relative to the BIC-selected finite-$k$ model. If the points had deviated strongly from the diagonal, this would have indicated that the choice between finite-$k$ monotonicity and complete monotonicity materially affects the richness estimates. This agreement is important because it means that, even when BIC selects finite values of $k$, the final richness estimates are almost unchanged by using the completely monotone approximation. In practice, the modelling choice affects the theoretical interpretation more than the numerical estimate in these sampled units.
+\paragraph{Interpretation (Figure~\ref{fig:results_cm_vs_kmonotone_scatter}).}
+The AIC-selected finite-$k^\ast$ monotone estimates and the completely monotone estimates are in near-perfect agreement: almost all points lie on the diagonal, meaning both approaches yield essentially the same estimated richness. Strong deviation from the diagonal would have indicated that the choice between finite-$k$ and complete monotonicity materially affects the estimates, but that is not the case here. In practice, the modelling choice has more impact on the theoretical interpretation than on the numerical result.
 
 \subsection{Rarefaction and extrapolation}
 
@@ -946,8 +944,8 @@ Rarefaction and extrapolation curves show how observed vocabulary grows with sam
     \label{fig:results_rarefaction_extrapolation_by_language}
 \end{figure}
 
-\paragraph{Interpretation.}
-We can clearly see that all curves are not close to saturation and grow with the sample size. On top of that all of them aim towards the same expected number. The representative-unit comparison should not be interpreted as proving that the languages have the same vocabulary richness, because each panel is based on one selected unit and the corpora differ strongly in size and composition.
+\paragraph{Interpretation (Figure~\ref{fig:results_rarefaction_extrapolation_by_language}).}
+All three curves continue to rise at their respective observed sample sizes, confirming that none of the representative units have reached saturation. The curves also converge toward broadly similar extrapolated values, though this should not be taken as evidence that the languages have equal vocabulary richness: each panel represents a single selected unit, and the corpora differ substantially in size and composition.
 
 
 \subsection{Cross-language comparison}
@@ -983,9 +981,8 @@ This comparison uses only spoken and dialogue-based corpora. Shakespeare is excl
     \label{tab:results_cross_language_estimator_summary}
 \end{table}
 
-\paragraph{Interpretation.}
-TODO: Explain the cross-language table while being careful about sample-size and corpus-composition differences. Isnt this the same table as before?
-The important columns here are the median observed vocabulary, the median estimated total richness, the median unseen component $\hat{f}_0$, and the normalized ratio $\hat{S}/S_{\mathrm{obs}}$. The raw estimates are highest for French, but the normalized ratios are much closer across languages, which shows why raw $\hat{S}$ values should not be compared without considering sample size and coverage.
+\paragraph{Interpretation (Table~\ref{tab:results_cross_language_estimator_summary}).}
+Unlike Table~\ref{tab:results_per_language_estimator_summary}, which reported mean and IQR of $\hat{S}$ together with failure counts, this table focuses on the median observed vocabulary, the median estimated total richness, the median unseen component $\hat{f}_0$, and the normalized ratio $\hat{S}/S_{\mathrm{obs}}$. The raw estimates are highest for French, but the normalized ratios are much closer across languages, which shows why raw $\hat{S}$ values should not be compared without considering sample size and coverage.
 
 \begin{figure}[htbp]
     \centering
@@ -994,8 +991,8 @@ The important columns here are the median observed vocabulary, the median estima
     \label{fig:results_cross_language_median_shat}
 \end{figure}
 
-\paragraph{Interpretation.}
-The cross-language differences that appear constant across different estimators is that the French Median $\hat{S}$ scores higher then German and English. This isnt only due because French has a bigger corpora since the English corpora is larger then the German one and still scores lower then it.
+\paragraph{Interpretation (Figure~\ref{fig:results_cross_language_median_shat}).}
+The cross-language difference that is consistent across estimators is that French has the highest median $\hat{S}$, followed by German and then English. This is not only because French has a larger corpus: the English corpus is larger than the German one and yet scores lower, suggesting that corpus size alone does not drive the ordering.
 
 \begin{figure}[htbp]
     \centering
@@ -1004,8 +1001,8 @@ The cross-language differences that appear constant across different estimators 
     \label{fig:results_coverage_standardized_language_comparison}
 \end{figure}
 
-\paragraph{Interpretation.}
-When comparing the ratios and not the raw estimates we can see how it affects the results. The French corpora doesnt score as high anymore. This is mainly due to the fact that the number of estimated words doesnt grow linearly with the number of tokens but rather logarithmically. The ratio plot is therefore more useful for comparing estimator behavior than the raw $\hat{S}$ plot. It shows that the amount of extrapolation relative to observed vocabulary is broadly similar across languages for a given estimator, while estimator choice still has a large effect.
+\paragraph{Interpretation (Figure~\ref{fig:results_coverage_standardized_language_comparison}).}
+When comparing the normalized ratios rather than the raw estimates, the French corpus no longer stands out as clearly. This is mainly because the number of estimated word types does not grow linearly with the number of tokens but rather logarithmically. The ratio plot is therefore more informative for comparing estimator behavior than the raw $\hat{S}$ plot. It shows that the amount of extrapolation relative to observed vocabulary is broadly similar across languages for a given estimator, while estimator choice still has a large effect.
 
 
 \subsection{Estimator agreement and disagreement}
@@ -1029,7 +1026,7 @@ Finally, we compare the estimators directly across all spoken/dialogue corpora.
     \label{tab:results_estimator_summary_global}
 \end{table}
 
-\paragraph{Interpretation.}
+\paragraph{Interpretation (Table~\ref{tab:results_estimator_summary_global}).}
 The global summary shows a clear ordering of estimator aggressiveness. Jackknife1 gives the smallest median ratio, Chao1 and Jackknife2 give moderate ratios, iChao1 is slightly above Chao1, ACE gives larger estimates because it corrects for heterogeneity among rare types, and Breakaway gives the largest median ratio. The very large mean ratio for Breakaway indicates that a small number of successful fits produce extremely large estimates.
 
 \begin{table}[htbp]
@@ -1048,7 +1045,7 @@ The global summary shows a clear ordering of estimator aggressiveness. Jackknife
     \label{tab:results_estimator_failure_summary}
 \end{table}
 
-\paragraph{Interpretation.}
+\paragraph{Interpretation (Table~\ref{tab:results_estimator_failure_summary}).}
 Chao1, iChao1, and Jackknife1 are numerically stable on all units. ACE and Jackknife2 fail only rarely. Breakaway fails for about half of the units, meaning its summaries are based only on the subset of corpora where the ratio-regression fit is possible and valid. This makes Breakaway less reliable as a general-purpose estimator for the present data.
 
 
@@ -1059,7 +1056,7 @@ Chao1, iChao1, and Jackknife1 are numerically stable on all units. ACE and Jackk
     \label{fig:results_estimator_ratio_over_chao1}
 \end{figure}
 
-\paragraph{Interpretation.}
+\paragraph{Interpretation (Figure~\ref{fig:results_estimator_ratio_over_chao1}).}
 Ratios relative to Chao1 show how each estimator scales compared with a familiar lower-bound baseline. Values above 1 mean that an estimator is more aggressive than Chao1, while values below 1 mean that it gives smaller estimates. This representation is easier to compare across corpora of different absolute sizes.
 
 \section{Discussion}\label{sec:discussion}
