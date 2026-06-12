@@ -711,7 +711,31 @@ For each speaker or character, we computed the abundance frequency counts $f_1, 
 
 \subsection{Shakespeare replication baseline}
 
-We first use the Shakespeare corpus as a replication baseline for the estimators. This corpus is not used in the cross-language spoken-language comparison, since it is a written literary corpus rather than spoken language.
+We first use the full Shakespeare corpus as a replication baseline for the estimators. This corpus is not used in the cross-language spoken-language comparison, since it is a written literary corpus rather than spoken language.
+
+\begin{table}[htbp]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{lrrrrrrrrrr}
+        $x$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+        \hline
+        0+ & 9704 & 3562 & 2050 & 1408 & 1028 & 759 & 620 & 475 & 415 & 393 \\
+        10+ & 292 & 264 & 217 & 231 & 192 & 176 & 165 & 143 & 144 & 146 \\
+        20+ & 124 & 103 & 89 & 97 & 87 & 89 & 76 & 84 & 59 & 82 \\
+        30+ & 74 & 49 & 60 & 56 & 57 & 51 & 34 & 36 & 42 & 40 \\
+        40+ & 43 & 52 & 33 & 34 & 23 & 36 & 33 & 33 & 35 & 34 \\
+        50+ & 24 & 17 & 20 & 34 & 27 & 22 & 13 & 21 & 20 & 18 \\
+        60+ & 25 & 17 & 18 & 23 & 23 & 13 & 13 & 10 & 16 & 13 \\
+        70+ & 16 & 8 & 14 & 17 & 9 & 17 & 8 & 14 & 17 & 11 \\
+        80+ & 14 & 16 & 10 & 15 & 8 & 14 & 9 & 6 & 11 & 10 \\
+        90+ & 3 & 9 & 8 & 12 & 8 & 5 & 8 & 10 & 6 & 5 \\
+    \end{tabular}}
+    \caption{Frequency spectrum of the processed full Shakespeare corpus. Each entry is the number of distinct word types occurring exactly $x$ times, where the row label gives the tens digit; for example, the first row gives $f_1,\ldots,f_{10}$ and the second row gives $f_{11},\ldots,f_{20}$. The full corpus has 890,426 tokens and 25,700 observed word types.}
+    \label{tab:results_shakespeare_frequency_table}
+\end{table}
+
+\paragraph{Table interpretation placeholder.}
+TODO: Compare this frequency spectrum with the published Shakespeare table. If the published table has different singleton and doubleton counts, explain whether this comes from a different source, tokenization, lemmatization, or preprocessing convention.
 
 \begin{table}[htbp]
     \centering
@@ -719,19 +743,19 @@ We first use the Shakespeare corpus as a replication baseline for the estimators
     \begin{tabular}{lrrrrrrr}
         Estimator & Tokens $n$ & $S_{\mathrm{obs}}$ & $f_1$ & $f_2$ & Coverage & $\hat{S}$ & $\hat{S}/S_{\mathrm{obs}}$ \\
         \hline
-        Chao1 & 21547 & 3561 & 1995 & 562 & 0.9094 & 7020.1 & 1.9954 \\
-        iChao1 & 21547 & 3561 & 1995 & 562 & 0.9094 & 7615.2 & 2.1718 \\
-        ACE & 21547 & 3561 & 1995 & 562 & 0.9094 & 12905.6 & 3.6513 \\
-        Jackknife1 & 21547 & 3561 & 1995 & 562 & 0.9094 & 5390.8 & 1.5255 \\
-        Jackknife2 & 21547 & 3561 & 1995 & 562 & 0.9094 & 6805.5 & 1.9313 \\
-        Breakaway & 21547 & 3561 & 1995 & 562 & 0.9094 & 28689.2 & 8.3948 \\
+        Chao1 & 890426 & 25700 & 9704 & 3562 & 0.9891 & 38918.3 & 1.5143 \\
+        iChao1 & 890426 & 25700 & 9704 & 3562 & 0.9891 & 41506.7 & 1.6150 \\
+        ACE & 890426 & 25700 & 9704 & 3562 & 0.9891 & 70942.2 & 2.7604 \\
+        Jackknife1 & 890426 & 25700 & 9704 & 3562 & 0.9891 & 35404.0 & 1.3776 \\
+        Jackknife2 & 890426 & 25700 & 9704 & 3562 & 0.9891 & 41546.0 & 1.6166 \\
+        Breakaway & 890426 & 25700 & 9704 & 3562 & 0.9891 & -- & -- \\
     \end{tabular}}
-    \caption{Summary of Shakespeare replication estimates. Values are medians across Shakespeare units; the full generated table is stored in \texttt{results/tables/shakespeare\_estimator\_table.csv}.}
+    \caption{Summary of Shakespeare replication estimates for the processed full Shakespeare corpus. Breakaway is undefined here because the fitted extrapolation parameter is negative.}
     \label{tab:results_shakespeare_estimator_summary}
 \end{table}
 
 \paragraph{Table interpretation placeholder.}
-TODO: Explain the Shakespeare estimator table, especially the gap between lower-bound estimators and Breakaway.
+TODO: Explain the Shakespeare estimator table, especially the difference between lower-bound estimators and ACE, and mention that Breakaway is not stable for this full-corpus frequency spectrum.
 
 \begin{figure}[htbp]
     \centering
