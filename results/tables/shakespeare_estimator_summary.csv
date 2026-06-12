@@ -1,0 +1,7 @@
+Dataset,Tokens n,Observed types,f1,f2,Coverage,Estimator,f0_hat,S_hat,S_hat / S_obs
+"Shakespeare (per play, median)",21547.0,3561.0,1995.0,562.0,0.9094,Chao1,3500.6,7020.1,1.9954
+"Shakespeare (per play, median)",21547.0,3561.0,1995.0,562.0,0.9094,iChao1,4092.0,7615.2,2.1718
+"Shakespeare (per play, median)",21547.0,3561.0,1995.0,562.0,0.9094,ACE,9304.6,12905.6,3.6513
+"Shakespeare (per play, median)",21547.0,3561.0,1995.0,562.0,0.9094,Jackknife1,1834.8,5390.8,1.5255
+"Shakespeare (per play, median)",21547.0,3561.0,1995.0,562.0,0.9094,Jackknife2,3292.4,6805.5,1.9313
+"Shakespeare (per play, median)",21547.0,3561.0,1995.0,562.0,0.9094,Breakaway,24634.8,28689.2,8.3948

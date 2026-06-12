@@ -1,0 +1,4 @@
+Language,Corpora included,Number of units,Total tokens,Total observed types,Mean tokens,Median tokens,Mean S_obs,Mean coverage
+English,"bnc, imsdb, sbcorpus",5517,6675363,,1210.0,815.0,430.0,0.7197
+French,clapi,10813,160251286,,14820.0,1927.0,1485.0,0.8104
+German,dgd,47,68141,,1450.0,1485.0,505.0,0.7782

@@ -1,0 +1,19 @@
+Language,Estimator,Median S_obs,Median S_hat,Median f0_hat,Median coverage,Median S_hat/S_obs
+English,Chao1,357.0,885.9,520.1,0.7194,2.3519
+English,iChao1,357.0,968.4,605.8,0.7194,2.5719
+English,ACE,357.0,1523.0,1161.7,0.7194,4.094
+English,Jackknife1,357.0,585.6,228.2,0.7194,1.6352
+English,Jackknife2,357.0,764.7,405.9,0.7194,2.1257
+English,Breakaway,357.0,1927.2,1554.4,0.7194,5.2128
+French,Chao1,585.0,1377.2,797.9,0.821,2.1066
+French,iChao1,585.0,1507.5,929.2,0.821,2.3069
+French,ACE,585.0,2443.5,1855.0,0.821,3.8163
+French,Jackknife1,585.0,928.8,342.8,0.821,1.5676
+French,Jackknife2,585.0,1200.7,614.5,0.821,2.0035
+French,Breakaway,585.0,3249.9,2615.9,0.821,4.9321
+German,Chao1,543.0,1269.4,700.0,0.7838,2.2451
+German,iChao1,543.0,1359.3,811.7,0.7838,2.4446
+German,ACE,543.0,2188.3,1675.0,0.7838,4.0295
+German,Jackknife1,543.0,855.8,325.7,0.7838,1.6027
+German,Jackknife2,543.0,1111.3,582.4,0.7838,2.0642
+German,Breakaway,543.0,2500.3,1946.3,0.7838,5.2887

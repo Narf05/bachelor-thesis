@@ -1,0 +1,7 @@
+Estimator,Mean S_hat/S_obs,Median S_hat/S_obs,IQR,Failure rate,Typical behavior
+Chao1,2.2673,2.2119,0.7028,0.0,Lower bound via f1/f2 ratio
+iChao1,2.476,2.4246,0.7789,0.0,Tighter lower bound using f3/f4
+ACE,3.9731,3.9421,0.9818,0.1,Heterogeneity-corrected lower bound
+Jackknife1,1.579,1.5998,0.1413,0.0,Delete-one jackknife; may overshoot
+Jackknife2,2.0236,2.0624,0.2837,0.0,Delete-two jackknife; more aggressive
+Breakaway,13.6129,5.0446,3.8501,50.7,Ratio-regression; can be unstable for small n

@@ -2,7 +2,7 @@
 Preprocessing runner: extract per-speaker files and populate the database.
 
 Run from the code/ directory:
-    python preprocessing/preprocess.py [--corpus all|shakespeare|bnc|sbcorpus|imsdb]
+    python preprocessing/preprocess.py [--corpus all|shakespeare|bnc|sbcorpus|imsdb|dgd|clapi]
                                        [--force]
                                        [--fillers]
                                        [--min-words N|none]
@@ -74,6 +74,36 @@ def extract_imsdb(force: bool = False, min_words: int | None = 400):
     return extract(src, out, min_words=min_words, force=force)
 
 
+def extract_dgd(force: bool = False, min_words: int | None = 400):
+    from preprocessing.extractors.dgd import extract
+
+    dgd_root = Path.home() / "Downloads"
+    fln_dirs = sorted(dgd_root.glob("DGD_*/fln_files"))
+    out = SPEAKERS / "dgd"
+    min_words_label = "none" if min_words is None else str(min_words)
+
+    if not fln_dirs:
+        print(f"\n[extract] DGD: no DGD_*/fln_files folders found under {dgd_root}")
+        return {}
+
+    all_paths: dict = {}
+    for fln_dir in fln_dirs:
+        print(f"\n[extract] DGD: {fln_dir} -> {out}")
+        print(f"[extract] minimum words per speaker: {min_words_label}")
+        all_paths.update(extract(fln_dir, out, min_words=min_words, force=force))
+    return all_paths
+
+
+def extract_clapi(force: bool = False, min_words: int | None = 400):
+    from preprocessing.extractors.clapi import extract
+
+    out = SPEAKERS / "clapi"
+    print(f"\n[extract] CLAPI (Claire-Dialogue-French-0.1) -> {out}")
+    min_words_label = "none" if min_words is None else str(min_words)
+    print(f"[extract] minimum words per speaker: {min_words_label}")
+    return extract(out, split="train", min_words=min_words, force=force)
+
+
 def _already_processed() -> set[str]:
     """Return the set of corpus names already stored in the database."""
     try:
@@ -136,13 +166,15 @@ def sync_cache_to_speaker_dir(corpus_source: str, speaker_dir: Path) -> None:
     clear_missing_corpora(corpus_source, valid_names)
 
 
-CORPORA = ["shakespeare", "bnc", "sbcorpus", "imsdb"]
+CORPORA = ["shakespeare", "bnc", "sbcorpus", "imsdb", "dgd", "clapi"]
 
 EXTRACTORS = {
     "shakespeare": extract_shakespeare,
     "bnc": extract_bnc,
     "sbcorpus": extract_sbcorpus,
     "imsdb": extract_imsdb,
+    "dgd": extract_dgd,
+    "clapi": extract_clapi,
 }
 
 
@@ -184,7 +216,7 @@ def main():
 
     for corpus in targets:
         extractor = EXTRACTORS[corpus]
-        if corpus == "imsdb":
+        if corpus in ("imsdb", "dgd", "clapi"):
             extractor(force=args.force, min_words=args.min_words)
         else:
             extractor(min_words=args.min_words)

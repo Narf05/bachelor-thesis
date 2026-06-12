@@ -1,0 +1,7 @@
+Estimator,Total units,Failed / undefined,Failure rate (%)
+Chao1,16374,0,0.0
+iChao1,16374,0,0.0
+ACE,16374,10,0.1
+Jackknife1,16374,0,0.0
+Jackknife2,16374,2,0.0
+Breakaway,16374,8300,50.7

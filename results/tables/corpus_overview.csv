@@ -1,0 +1,7 @@
+Corpus,Language,Type,Number of units,Total tokens,Median tokens,Min tokens,Max tokens,Median S_obs,Median f1/n,Median coverage
+BNC,English,Spoken/Dialogue,136,312275,692.0,2,36869,282.0,0.4082,0.7947
+CLAPI,French,Spoken/Dialogue,10813,160251286,1927.0,347,2757857,585.0,0.3036,0.821
+DGD,German,Spoken/Dialogue,47,68141,1485.0,423,2392,543.0,0.3657,0.7838
+IMSDb,English,Spoken/Dialogue,5335,6307786,814.0,61,9529,357.0,0.4386,0.7185
+SBCorpus,English,Spoken/Dialogue,46,55302,1156.0,1,5311,404.0,0.3493,0.793
+Shakespeare,Shakespeare,Written,43,1780852,21547.0,362,890426,3561.0,0.1653,0.9094
