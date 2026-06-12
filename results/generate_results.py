@@ -560,6 +560,77 @@ def section_6_2_overview(meta: pd.DataFrame) -> None:
     corpus_table = pd.DataFrame(corpus_rows)
     _save_csv(corpus_table, "corpus_overview")
 
+    # -- Frequency spectrum by language ------------------------------------
+    # Raw f_k values are useful, but not directly comparable because the
+    # language corpora have very different total sizes.  The normalized
+    # columns express each f_k relative to observed vocabulary size and token
+    # count, making cross-language comparison more meaningful.
+    language_sources = {
+        "English": ["bnc", "sbcorpus", "imsdb"],
+        "French":  ["clapi"],
+        "German":  ["dgd"],
+    }
+    spectrum_rows = []
+    spectrum_summary_rows = []
+    max_k = 50
+
+    for lang, sources in language_sources.items():
+        available_sources = [s for s in sources if s in set(meta["corpus_source"])]
+        if not available_sources:
+            continue
+        wc_lang = load_merged_word_counts(available_sources)
+        fc_lang = wc_to_fc(wc_lang)
+        total_tokens = sum(wc_lang.values())
+        s_obs = len(wc_lang)
+
+        spectrum_summary_rows.append({
+            "Language": lang,
+            "Total tokens": total_tokens,
+            "Observed types": s_obs,
+            "Singletons f1": fc_lang.get(1, 0),
+            "Doubletons f2": fc_lang.get(2, 0),
+            "f1 / S_obs": fc_lang.get(1, 0) / s_obs if s_obs else None,
+            "f1 / tokens": fc_lang.get(1, 0) / total_tokens if total_tokens else None,
+        })
+
+        for k in range(1, max_k + 1):
+            fk = fc_lang.get(k, 0)
+            spectrum_rows.append({
+                "Language": lang,
+                "k": k,
+                "f_k": fk,
+                "Total tokens": total_tokens,
+                "Observed types S_obs": s_obs,
+                "f_k / S_obs": fk / s_obs if s_obs else None,
+                "f_k per 1000 observed types": 1000 * fk / s_obs if s_obs else None,
+                "Token mass k*f_k": k * fk,
+                "k*f_k / total tokens": (k * fk) / total_tokens if total_tokens else None,
+            })
+
+    spectrum_df = pd.DataFrame(spectrum_rows)
+    _save_csv(spectrum_df, "language_frequency_spectrum")
+    _save_csv(pd.DataFrame(spectrum_summary_rows), "language_frequency_spectrum_summary")
+
+    wide_parts = []
+    for lang in language_sources:
+        sub = spectrum_df[spectrum_df["Language"] == lang][
+            ["k", "f_k", "f_k per 1000 observed types", "k*f_k / total tokens"]
+        ].copy()
+        if sub.empty:
+            continue
+        sub = sub.rename(columns={
+            "f_k": f"{lang} f_k",
+            "f_k per 1000 observed types": f"{lang} f_k per 1000 types",
+            "k*f_k / total tokens": f"{lang} token share",
+        })
+        wide_parts.append(sub)
+
+    if wide_parts:
+        wide_df = wide_parts[0]
+        for part in wide_parts[1:]:
+            wide_df = wide_df.merge(part, on="k", how="outer")
+        _save_csv(wide_df, "language_frequency_spectrum_comparable")
+
     # -- Plot: token-count distribution by language -------------------------
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
 
