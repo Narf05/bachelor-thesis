@@ -3,6 +3,8 @@
 \usepackage{amssymb} 
 \usepackage{amsmath}
 \usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{pdfpages}
 \newcommand{\E}{\mathbb{E}}
 \usepackage{listings}
 \usepackage{xcolor}
@@ -16,13 +18,44 @@
 
 \begin{document}
 
-\title{Estimating Spoken Vocabulary Size Using Nonparametric Species Richness Methods}
-\author{Fran Tomazic}
-\date{March 2026}
-\maketitle
+\begin{titlepage}
+    \centering
+
+    \begin{flushleft}
+        \includegraphics[width=4cm]{eth-logo-pos.png}
+    \end{flushleft}
+
+    \vspace{3cm}
+
+    {\LARGE \textbf{Estimating Spoken Vocabulary Size Using\\[0.3em] Nonparametric Species Richness Methods}\par}
+
+    \vspace{1.5cm}
+
+    {\Large Bachelor Thesis\par}
+
+    \vspace{1.5cm}
+
+    {\large Fran Tomazic\par}
+
+    \vspace{0.5cm}
+
+    {\large March 2026\par}
+
+    \vfill
+
+    {\large Supervised by Prof. Fadoua Balabdaoui\par}
+
+    \vspace{1cm}
+
+    {\large ETH Zürich\par}
+
+\end{titlepage}
+
+\newpage
+
 
 \begin{abstract}
-Estimating the total vocabulary of a speaker from a finite recording maps naturally onto the problem of nonparametric species richness estimation, where each distinct word type is treated as a species and each token as an individual. In this thesis, we apply and compare a range of nonparametric estimators, such as Chao1, iChao1, ACE, jackknife, Breakaway, and shape-constrained k-monotone and completely monotone estimators, to transcribed speech data in English, French, and German, using the complete works of Shakespeare as a written replication baseline. The main finding is that estimator choice has a substantially larger effect on the estimated vocabulary size than language: median richness ratios range from around 1.6 for the first-order jackknife to over 5 for Breakaway. Once normalized by the observed vocabulary size. However, these ratios are strikingly consistent across all three languages for any given estimator, suggesting that the gap between what a speaker produces and what they could produce is a relatively universal feature of spoken language. The shape-constrained estimators produce estimates in near-perfect agreement with each other. Furthermore, Breakaway fails on roughly half of all units due to insufficient frequency data, making it unreliable for short spoken samples. In general, moderately flexible estimators, such as Chao1 or ACE offer the best combination of reliability and accuracy for estimating spoken vocabulary.
+Estimating the total vocabulary of a speaker from a finite recording maps naturally onto the problem of nonparametric species richness estimation, where each distinct word type is treated as a species and each token as an individual. In this thesis, we apply and compare a range of nonparametric estimators, such as Chao1, iChao1, ACE, jackknife, Breakaway, and shape-constrained k-monotone and completely monotone estimators, to transcribed speech data in English, French, and German, using the complete works of Shakespeare as a written replication baseline. The main finding is that estimator choice has a substantially larger effect on the estimated vocabulary size than language: median richness ratios range from around 1.6 for the first-order jackknife to over 5 for Breakaway. Once normalized by the observed vocabulary size, these ratios are strikingly consistent across all three languages for any given estimator, suggesting that the gap between what a speaker produces and what they could produce is a relatively universal feature of spoken language. The shape-constrained estimators produce estimates in near-perfect agreement with each other. Furthermore, Breakaway fails on roughly half of all units due to insufficient frequency data, making it unreliable for short spoken samples. In general, moderately flexible estimators, such as Chao1 and ACE offer the best combination of reliability and accuracy for estimating spoken vocabulary.
 \end{abstract}
 \newpage
 
@@ -32,21 +65,21 @@ Estimating the total vocabulary of a speaker from a finite recording maps natura
 
 \section{Introduction}
 
-The problem of estimating species richness has a long history in multiple disciplines. It is the total number of distinct species present in an assemblage, including those not observed in any sample. The 1943 paper by Fisher, Corbet, and Williams~\cite{fisher1943} laid the mathematical foundation for statistical approaches to this problem. Around the same time, Good and Turing developed frequency estimation methods as part of their effort to crack German ciphers during World War II~\cite{good1953,good2000}. Since then, the ``species problem'' has appeared in ecology (estimating butterfly species on an island), biology (counting microbial taxa), genetics (enumerating alleles), software engineering (finding undiscovered bugs), and linguistics (determining how many words an author knew)~\cite{chao2016species}.
+The problem of estimating species richness has a long history in multiple disciplines. Species richness is the total number of distinct species present in an assemblage, including those not observed in any sample. The 1943 paper by Fisher, Corbet, and Williams~\cite{fisher1943} laid the mathematical foundation for statistical approaches to this problem. Around the same time, Good and Turing developed frequency estimation methods as part of their effort to crack German ciphers during World War II~\cite{good1953,good2000}. Since then, the ``species problem'' has appeared in ecology (estimating butterfly species on an island), biology (counting microbial taxa), genetics (enumerating alleles), software engineering (finding undiscovered bugs), and linguistics (determining how many words an author knew)~\cite{chao2016species}.
 
 In nearly all of these settings, counting the true richness is almost impossible. A sample will almost always miss a fraction of the true existing species, and the simple count of observed species $S_{\mathrm{obs}}$ systematically underestimates the true richness $S$. The magnitude of this negative bias depends on the heterogeneity of the underlying abundance distribution: the more unequal the species abundances, the more rare species the sample will fail to detect. This makes the gap between $S_{\mathrm{obs}}$ and $S$ the central statistical challenge of the field.
 
 \vspace{1em}
 
 Our main question throughout this paper is: \emph{how can we estimate the total spoken vocabulary of a person from a finite recording of their speech?} In this setting, each distinct word corresponds to a species, and each token (word occurrence) corresponds to an individual. Later on, we will define more precisely what we mean by a distinct word. As we can see, spoken vocabulary falls right into the regime where species richness estimation is most difficult: word frequencies are highly heterogeneous. 
-They are governed by Zipf's law, which states that the frequency of a word is approximately inversely proportional to its rank~\cite{baayen2001}.What is the rank in this context? Suppose that you order all the words of a text by their frequencies, then the highest frequency word has rank 1, second highest has rank 2, etc... and by Zipf's law formula we get that $f(1)\propto{1}$ and $f(2)\propto{1/2}$ thus the rank 1 word appears twice as often as the rank 2 word.  This comes from the fact that a small number of words (\emph{the}, \emph{is}, \emph{a} \emph{and}) represent a large share of all tokens, while the majority of distinct words appear only once or twice in any finite sample. Therefore, the number of words observed exactly once or twice, commonly referred to as singletons and doubletons, is always large.
+They are governed by Zipf's law, which states that the frequency of a word is approximately inversely proportional to its rank~\cite{baayen2001}.\ What is the rank in this context? Suppose that you order all the words of a text by their frequencies, then the highest frequency word has rank 1, second highest has rank 2, etc... and by Zipf's law formula we get that $f(1)\propto{1}$ and $f(2)\propto{1/2}$ thus the rank 1 word appears twice as often as the rank 2 word.  This comes from the fact that a small number of words (\emph{the}, \emph{is}, \emph{a}, \emph{and}) represent a large share of all tokens, while the majority of distinct words appear only once or twice in any finite sample. Therefore, the number of words observed exactly once or twice, commonly referred to as singletons and doubletons, is always large.
 
-A person's \emph{active} spoken vocabulary (with how many different words they speak on a daily basis) is considerably smaller than their \emph{passive} vocabulary (the words they can understand). Research in applied linguistics suggests that comprehension of spoken texts requires knowledge of roughly 6 \,000 to 7 \,000 word families, whereas written texts require 8 \,000 to 9 \,000. But what a person \emph{produces} in conversation is a much smaller, context-dependent subset of their active vocabulary. Estimating the size of this active vocabulary from a finite speech sample is therefore a nontrivial statistical problem, and one that is well suited to the tools of nonparametric species richness estimation. We will also compare estimates derived from spoken data with those from written text, where we expect greater lexical diversity due to the wider range of registers and the time available for word choice.
+A person’s active spoken vocabulary, that is, the distinct words they use in everyday speech," (the vocabulary is the set of words and not the number of these words), is considerably smaller than their \emph{passive} vocabulary (the words they can understand). Research in applied linguistics suggests that comprehension of spoken texts requires knowledge of roughly 6 \,000 to 7 \,000 word families, whereas written texts require 8 \,000 to 9 \,000. But what a person \emph{produces} in conversation is a much smaller, context-dependent subset of their active vocabulary. Estimating the size of this active vocabulary from a finite speech sample is therefore a nontrivial statistical problem, and one that is well suited to the tools of nonparametric species richness estimation. We will also compare estimates derived from spoken data with those from written text, where we expect greater lexical diversity due to the wider range of registers and the time available for word choice.
 
 \vspace{1em}
 
-In this thesis, we proceed as follows. In Section~\ref{sec:framework} we establish the mathematical framework and notation for species richness estimation, distinguishing abundance data from incidence data and defining sample coverage. Section~\ref{sec:estimators} reviews classical nonparametric estimators such as Good-Turing, Chao1, iChao1, ACE, and the jackknife, discussing the assumptions, strengths, and limitations of each. Section~\ref{sec:shape} presents the main theoretical contribution: shape-constrained estimation via $k$-monotone and completely monotone distributions, We explain why using the completely monotone model is a natural next step when the degree of monotonicity $k$ is large.
-Section~\ref{sec:data} describes our data sources: the Shakespeare word counts from Spevack~\cite{Spevack1968} for replication, and several other spoken language corpuses. Section~\ref{sec:results} presents the results, including estimator comparisons, rarefaction, and extrapolation curves. We discuss the findings and conclude in Section~\ref{sec:conclusion}.
+In this thesis, we proceed as follows. In Section~\ref{sec:framework} we establish the mathematical framework and notation for species richness estimation, distinguishing abundance data from incidence data and defining sample coverage. Section~\ref{sec:estimators} reviews classical nonparametric estimators such as Good-Turing, Chao1, iChao1, ACE, and the jackknife, discussing the assumptions, strengths, and limitations of each. Section~\ref{sec:shape} presents the main theoretical contribution: shape-constrained estimation via $k$-monotone and completely monotone distributions. We explain why using the completely monotone model is a natural next step when the degree of monotonicity $k$ is large.
+Section~\ref{sec:data} describes our data sources: the Shakespeare word counts from Spevack~\cite{Spevack1968} for replication, and several other spoken language corpora. Section~\ref{sec:results} presents the results, including estimator comparisons, rarefaction, and extrapolation curves. We discuss the findings and conclude in Section~\ref{sec:conclusion}.
 
 \clearpage
 \section{Framework and Notation}\label{sec:framework}
@@ -57,7 +90,7 @@ Let us define our framework and notation. Consider an assemblage consisting of $
 \]
 The relative abundance of species $i$ is $p_i = N_i / N$, with  $\sum_{i=1}^{S} p_i = 1$. The quantities $N$, $S$, $N_i$, and $p_i$ represent the true and unknown parameters of the assemblage.
 
-Assume that we draw a random sample of $n$ individuals from the assemblage, thus having\quad $n<N$.\quad In this sample, a total of $S_{\mathrm{obs}}$ distinct species are observed, we call it the \emph{reference sample}. Let $X_i$ be the number of individuals of the $i^{th}$ species observed in this sample. Only species with $X_i > 0$ are observable, and $\sum_{i=1}^{S} X_i = n$. We denote by $f_k$ the \emph{abundance frequency count}: the number of species represented by exactly $k$ individuals in the reference sample for $k = 1, 2, \ldots, n$. That is,
+Assume that we draw a random sample of $n$ individuals from the assemblage, with\quad $n<N$.\quad In this sample, a total of $S_{\mathrm{obs}}$ distinct species are observed; we call it the \emph{reference sample}. Let $X_i$ be the number of individuals of the $i^{th}$ species observed in this sample. Only species with $X_i > 0$ are observable, and $\sum_{i=1}^{S} X_i = n$. We denote by $f_k$ the \emph{abundance frequency count}: the number of species represented by exactly $k$ individuals in the reference sample for $k = 1, 2, \ldots, n$. That is,
 \[
     f_k = \#\{i : X_i = k\}\,.
 \]
@@ -94,7 +127,7 @@ An important concept for assessing how complete a sample is is the notion of \em
     \hat{C} = 1 - \frac{f_1}{n}\,.
 \end{equation}
 
-Intuitively, $f_1/n$ estimates the probability that the next sampled individual belongs to a species not yet observed, subtracting it from 1 gives the coverage. A coverage close to 1 indicates that most of the assemblage's individuals belong to species already detected, whereas a low coverage signals that many species remain unobserved. The same number of singletons can result from a small homogeneous vocabulary sampled sparsely or from a vast heterogeneous one sampled thoroughly, so f₁ cannot distinguish between these two fundamentally different scenarios; therefore, Chao and Jost~\cite{chaojost2012} proposed a bias-corrected version:
+Intuitively, $f_1/n$ estimates the probability that the next sampled individual belongs to a species not yet observed. When we substract it from 1, it gives us the coverage. A coverage close to 1 indicates that most of the assemblage's individuals belong to species already detected, whereas a low coverage signals that many species remain unobserved. The same number of singletons can result from a small homogeneous vocabulary sampled sparsely or from a vast heterogeneous one sampled thoroughly, so f₁ cannot distinguish between these two fundamentally different scenarios; therefore, Chao and Jost~\cite{chaojost2012} proposed a bias-corrected version:
 \begin{equation}\label{eq:coverage_chaojost}
     \hat{C} = 1 - \frac{f_1}{n} \cdot 
     \frac{(n-1)\,f_1}{(n-1)\,f_1 + 2\,f_2}\,.
@@ -119,9 +152,9 @@ A lower value indicates that a substantial part of the vocabulary is still repre
 
 \subsection{Parametric and nonparametric approaches}
 
-A parametric model assumes that the abundance distribution of the species belongs to a known family of distributions, fully characterized by a finite parameter vector $\theta$. Common choices include log-normal, inverse-Gaussian, and Zipf-Mandelbrot law. Although such models can produce efficient estimators when the assumed form is well specified, simulations have shown that they perform poorly when not~\cite{chao2016species}. Moreover, two parametric models may fit the observed data equally well, but produce widely different estimates of $S$, making the choice of distributional family a source of considerable uncertainty (as illustrated in Figure~\ref{fig:mixture_models}).
+A parametric model assumes that the abundance distribution of the species belongs to a known family of distributions, fully characterized by a finite parameter vector $\theta$. Common choices include log-normal, inverse-Gaussian, and Zipf-Mandelbrot law. Although such models can produce efficient estimators when the assumed form is well specified, simulations have shown that they perform poorly when misspecified~\cite{chao2016species}. Moreover, two parametric models may fit the observed data equally well, but produce widely different estimates of $S$, making the choice of distributional family a source of considerable uncertainty (as illustrated in Figure~\ref{fig:mixture_models}).
 
-A nonparametric model makes no assumption about the functional form of the underlying abundance distribution. Instead, the number of undetected species is estimated directly from the lower-order frequency counts $f_1, f_2, \ldots, f_r$ for some small species $r$. This approach is more robust across applications and permits meaningful comparisons between assemblages since it does not require that different assemblages follow the same distributional family. 
+A nonparametric model makes no assumption about the functional form of the underlying abundance distribution. Instead, the number of undetected species is estimated directly from the lower-order frequency counts $f_1, f_2, \ldots, f_r$ for some small number of species $r$. This approach is more robust across applications and permits meaningful comparisons between assemblages since it does not require that different assemblages follow the same distributional family. 
 
 \subsection{Rarefaction, extrapolation, and standardization}
 
@@ -177,7 +210,7 @@ For small values of $k$, where the counts are reliable, one uses $S(f_k) = f_k$ 
 
 \subsection{Chao1-type estimators}
 
-The Chao1 estimator, introduced by Chao~\cite{chao1984}, is the most widely used nonparametric lower bound for species richness. Its derivation applies the Cauchy-Schwarz inequality to the expected frequency counts, which guaranties that the result is a lower bound for $S$ regardless of the true abundance distribution.
+The Chao1 estimator, introduced by Chao~\cite{chao1984}, is the most widely used nonparametric lower bound for species richness. Its derivation applies the Cauchy-Schwarz inequality to the expected frequency counts, which guarantees that the result is a lower bound for $S$ regardless of the true abundance distribution.
 Now we present the derivation.
 
 \paragraph{Derivation.}
@@ -305,11 +338,11 @@ and the second-order jackknife estimator is
     \approx S_{\mathrm{obs}} + 2f_1 - f_2\,.
 \end{equation}
  
-The first-order jackknife adds approximately $f_1$ to $S_{\mathrm{obs}}$, effectively assuming that every singleton represents one missed species; this was initially the idea of Turing. It is a rough correction that tends to underestimate the true richness when the sample is small (because many species are missed entirely and do not even appear as singletons) and to overestimate when the sample is large (because some singletons are genuinely rare species that would not yield additional undetected species). The second-order jackknife partially addresses this by subtracting a term proportional to $f_2$, which tempers the correction when doubletons are numerous~\cite{burnham1979}.
+The first-order jackknife adds approximately $f_1$ to $S_{\mathrm{obs}}$, effectively assuming that every singleton represents one missed species; this is closely related to Turing’s original idea . It is a rough correction that tends to underestimate the true richness when the sample is small (because many species are missed entirely and do not even appear as singletons) and to overestimate when the sample is large (because some singletons are genuinely rare species that would not yield additional undetected species). The second-order jackknife partially addresses this by subtracting a term proportional to $f_2$, which tempers the correction when doubletons are numerous~\cite{burnham1979}.
 
 \subsection{Summary and limitations}
  
-Each of the estimators above has characteristic strengths and weaknesses. Good--Turing provides the conceptual foundation (sample coverage and probability mass of unseen species), but does not directly produce an estimate of $f_0$ as a count. Chao1 gives a guaranteed lower bound that is easy to compute and widely applicable but can severely underestimate the true richness when the abundances of species are highly heterogeneous. Precisely the situation we face with word frequency data. On the other hand, iChao1 tightens the bound by incorporating $f_3$ and $f_4$, but remains a lower bound. ACE accounts for heterogeneity through the coefficient of variation, but depends on the choice of cutoff $k$ and the jackknife estimators offer bias reduction but lack the theoretical guaranty of a lower bound and can overshoot.
+Each of the estimators above has characteristic strengths and weaknesses. Good--Turing provides the conceptual foundation (sample coverage and probability mass of unseen species), but does not directly produce an estimate of $f_0$ as a count. Chao1 gives a guaranteed lower bound that is easy to compute and widely applicable but can severely underestimate the true richness when the abundances of species are highly heterogeneous, precisely the situation we face with word frequency data. On the other hand, iChao1 tightens the bound by incorporating $f_3$ and $f_4$, but remains a lower bound. ACE accounts for heterogeneity through the coefficient of variation, but depends on the choice of cutoff $k$ and the jackknife estimators offer bias reduction but lack the theoretical guarantee of a lower bound and can overshoot.
  
 A common limitation shared by all of these methods is that they use  only the first few frequency counts and treat the rest of the abundance distribution as a black box. In the next section, we explore a fundamentally different approach: instead of extracting information from a handful of frequency counts, we impose a \emph{shape constraint} on the entire distribution of abundances. This leads to the $k$-monotone and completely monotone estimators, which can exploit more of the available information while remaining nonparametric.
 
@@ -324,11 +357,11 @@ The estimators presented in Section~\ref{sec:estimators} rely on only the first 
 We begin by defining the mixture model framework. Suppose that we have $N$ species and each species $i$ has its own abundance parameter $\lambda_i$, which governs how frequently it appears in a sample. Since we cannot know all individual parameters $N$, we assume that $\lambda_1, \lambda_2, \ldots, \lambda_N$ are independent draws from a common distribution $G$, called the \emph{mixing distribution}. The model then has two layers:
 \begin{enumerate}
     \item \textbf{Conditional layer:} Given $\lambda_i$, the number of times species $i$ are observed in the sample follows some simple distribution, typically a $\mathrm{Poisson}(\lambda_i)$ distribution.
-    \item \textbf{Mixing layer:} The parameters $\lambda_1, \ldots, \lambda_N$ are themselves random, drawn independently of $G$.
+    \item \textbf{Mixing layer:} The parameters $\lambda_1, \ldots, \lambda_N$ are themselves random, drawn independently from $G$.
 \end{enumerate}
 
 \paragraph{The mixture distribution.}
-Since each species has its own rate $\lambda_i$, we never observe these rates directly (only counts). To obtain the \emph{mixture distribution}  (the probability that a randomly chosen species is observed exactly $x$ times in the sample), we need to average the Poisson probability over all possible values of $\lambda$, weighted by the probability that each value is under $G$. Concretely, the Poisson probability of observing $x$ occurrences given rate $\lambda$ is $\lambda^xe^{-\lambda}/x$. And multiplying this by $dG(\lambda)$ and integrating over all $\lambda>0$ gives the unconditional probability: 
+Since each species has its own rate $\lambda_i$, we never observe these rates directly (only counts). To obtain the \emph{mixture distribution}  (the probability that a randomly chosen species is observed exactly $x$ times in the sample), we need to average the Poisson probability over all possible values of $\lambda$, weighted by the probability that each value is under $G$. Concretely, the Poisson probability of observing $x$ occurrences given rate $\lambda$ is $\lambda^xe^{-\lambda}/x!$. And multiplying this by $dG(\lambda)$ and integrating over all $\lambda>0$ gives the unconditional probability: 
 \begin{equation}\label{eq:poisson_mixture}
     p(x; G) = \int_0^{\infty} \frac{\lambda^x \, e^{-\lambda}}{x!} 
     \, dG(\lambda)\,, \qquad x \in \mathbb{N}_0\,.
@@ -385,8 +418,8 @@ since $n - k \approx n$ for large $n$. Combining the two limits yields the follo
 \]
 which is the Poisson probability mass function with parameter $\lambda$. Thus, for large $n$, the binomial model is well approximated by a Poisson distribution.
 
-\subparagraph{abundance data:}
-The same result can be obtained in a continuous-time framework. If we model the occurrences of each word as a Poisson process with rate $\lambda_i$\ (a counting process satisfying that the rate parameter $\lambda$ is constant over time, it is independent over non-overlapping intervals, and it is impossible to have simultaneous events), then the number of occurrences in an observation window of length $T$ follows a $\mathrm{Poisson}(\lambda_i T)$ distribution. The derivation proceeds through a system of ordinary differential equations solved by induction; see, e.g., Joyce~\cite{joyce2014poisson}. Since both routes lead to the same Poisson model, the choice between them is a modeling convenience: the discrete-slot view is more natural for a fixed-length corpus, while the continuous-time view arises naturally when the sampling effort is measured in time rather than token count.
+\subparagraph{Abundance data:}
+The same result can be obtained in a continuous-time framework. If we model the occurrences of each word as a Poisson process with rate $\lambda_i$\ (a counting process with a constant rate parameter $\lambda$, independent increments over non-overlapping intervals, and no simultaneous events), then the number of occurrences in an observation window of length $T$ follows a $\mathrm{Poisson}(\lambda_i T)$ distribution. The derivation proceeds through a system of ordinary differential equations solved by induction; see, e.g., Joyce~\cite{joyce2014poisson}. Since both routes lead to the same Poisson model, the choice between them is a modeling convenience: the discrete-slot view is more natural for a fixed-length corpus, while the continuous-time view arises naturally when the sampling effort is measured in time rather than token count.
 
 
 \paragraph{Parametric versus nonparametric mixtures.}
@@ -402,7 +435,7 @@ If $G$ is assumed to belong to a known parametric family, the estimation problem
 In each case, $X \mid \Lambda = \lambda \sim \mathrm{Poisson}(\lambda)$.
 The full probability mass functions are given in Appendix~\ref{app:parametric_models}.
 
-Figure~\ref{fig:mixture_models} compares the three fits. The left panel shows the observed region ($x \geq 1$): all three models capture the shape of the abundance distribution reasonably well, with the Poisson--Inverse Gaussian mixture providing the closest fit ($\chi^2 = 79.5$) and the Gamma--Poisson the worst fit ($\chi^2 = 8952.3$). However, the right panel reveals dramatic disagreement in the unobserved region. The Gamma--Poisson model assigns $p(0) = 0.974$, implying that nearly all species are undetected and yields an estimate of $\hat{N} \approx 1{,}004{,}540$, roughly 40 times the observed vocabulary. The LogNormal--Poisson gives $\hat{N} \approx 36{,}788$, while the Poisson--Inverse Gaussian gives $\hat{N} \approx 57{,}903$. Three models, a comparable fit to the observed data, and estimates of total vocabulary size spanning two orders of magnitude.
+Figure~\ref{fig:mixture_models} compares the three fits. The left panel shows the observed region ($x \geq 1$): all three models capture the shape of the abundance distribution reasonably well, with the Poisson--Inverse Gaussian mixture providing the closest fit ($\chi^2 = 79.5$) and the Gamma--Poisson the worst fit ($\chi^2 = 8952.3$). However, the right panel reveals dramatic disagreement in the unobserved region. The Gamma--Poisson model assigns $p(0) = 0.974$, implying that nearly all species are undetected and yields an estimate of $\hat{N} \approx 1{,}004{,}540$, roughly 40 times the observed vocabulary. The LogNormal--Poisson gives $\hat{N} \approx 36{,}788$, while the Poisson--Inverse Gaussian gives $\hat{N} \approx 57{,}903$. Thus, three models can fit the observed data comparably well while producing estimates to the observed data, and estimates of total vocabulary size spanning two orders of magnitude.
 
 \vspace{1em}
 
@@ -435,14 +468,14 @@ Sanathanan~\cite{sanathanan1972} showed that the full likelihood decomposes as $
     \end{equation}
     \item The \textbf{unconditional approach} jointly maximizes $L(N,G)$ in both $N$ and $G$. Wang and Lindsay~\cite{wanglindsay2005} showed that the resulting estimate also satisfies  Equation~\eqref{eq:horvitz_thompson}.
 \end{itemize}
-In both cases, the estimation of $N$ reduces to the estimation of $p(0;G)$ well. This makes the choice of mixture model critical, particularly its behavior near $\lambda = 0$.
+In both cases, the estimation of $N$ reduces to estimating of $p(0;G)$ well. This makes the choice of mixture model critical, particularly its behavior near $\lambda = 0$.
 
 \paragraph{Likelihood decomposition.}
 Each of the $N$ species is independently observed (with probability $1 - p(0;G)$) or missed (with probability $p(0;G)$). The number of observed species therefore follows a binomial distribution.
 \[
 S_{\mathrm{obs}} \sim \mathrm{Binomial}\bigl(N,\; 1 - p(0;G)\bigr)\,.
 \]
-This lets us factor in the full likelihood~\eqref{eq:full_likelihood} as $L(N,G) = L_m(N,G) \times L_c(G)$~\cite{sanathanan1972}, where
+This lets us factor the full likelihood~\eqref{eq:full_likelihood} as $L(N,G) = L_m(N,G) \times L_c(G)$~\cite{sanathanan1972}, where
 \begin{equation}\label{eq:marginal_likelihood}
     L_m(N,G) = \binom{N}{S_{\mathrm{obs}}} 
     \bigl[1 - p(0;G)\bigr]^{S_{\mathrm{obs}}} 
@@ -507,7 +540,7 @@ to the observed ratios using heteroscedastic nonlinear regression.\footnote{That
     \hat{S} = S_{\mathrm{obs}} + \hat{f}_0\,.
 \end{equation}
 
-In practice, Breakaway does not fit a single model, it considers a family of rational functions of increasing complexity and selects the most simple one satisfying three conditions: $\hat{\beta}_0 > 0$ (so that $\hat{f}_0$ is positive), no singularities in the domain of the observed ratios, and numerical convergence~\cite{willisbunge2015}. The issue of unobserved negative diversity estimators is as old as the problem itself: Fisher, Corbet, and Williams (1943) recognized it by fitting the negative binomial distribution to the Malayan butterfly data \cite{fisher1943}.
+In practice, Breakaway does not fit a single model, it considers a family of rational functions of increasing complexity and selects the simplest one satisfying three conditions: $\hat{\beta}_0 > 0$ (so that $\hat{f}_0$ is positive), no singularities in the domain of the observed ratios, and numerical convergence~\cite{willisbunge2015}. The issue of negative diversity estimates is as old as the problem itself: Fisher, Corbet, and Williams (1943) recognized it by fitting the negative binomial distribution to the Malayan butterfly data \cite{fisher1943}.
 
 \vspace{1em}
 
@@ -542,8 +575,8 @@ Figure~\ref{fig:breakaway_ratio_example} illustrates the extrapolation step in t
 \end{figure}
 
 \paragraph{Limitations.}
-As we have seen previously, we have no guaranty that the estimate is positive. If $\hat{\beta_0}$ is close to 0 or negative, The estimate $\hat{f_0} = f_1/\hat{\beta_0}$ will have a negative or very high estimate.\\
-This method also requires enough data points; otherwise we will not have the desired frequency counts. As stated in the Willis paper ~\cite{willisbunge2015}, if the maximum number of observed frequency is 6 or less, then there aren't enough ratios to fit the nonlinear model, and Breakaway cannot run.
+As we have seen previously, we have no guaranty that the estimate is positive. If $\hat{\beta_0}$ is close to 0 or negative, the estimate $\hat{f_0} = f_1/\hat{\beta_0}$ will have a negative or very high estimate.\\
+This method also requires enough data points; otherwise we will not have the desired frequency counts. As stated in the Willis paper ~\cite{willisbunge2015}, if the maximumobserved frequency is 6 or less, then there aren't enough ratios to fit the nonlinear model, and Breakaway cannot run.
 
 
 \subsection{Shape-constrained estimation}
@@ -576,7 +609,7 @@ For $k = 1$, the condition reduces to $-\Delta p(x) = p(x) - p(x+1) \geq 0$ for 
 
 \vspace{1em}
 
-The key structural property of $k$-monotone distributions is that they admit a mixture representation. Lefevre and Loisel \cite{LefevreLoisel2013} showed that a PMF $p$ in $\mathbb{N}_0$ is $k$-monotone if and only if there exists a sequence of mixing probabilities $(\pi^k_l)_{l \in \mathbb{N}_0}$ with $\pi^k_l \geq 0$ and $\sum_{l \geq 0} \pi^k_l = 1$ such that
+The key structural property of $k$-monotone distributions is that they admit a mixture representation. Lefevre and Loisel \cite{LefevreLoisel2013} showed that a PMF $p$ on $\mathbb{N}_0$ is $k$-monotone if and only if there exists a sequence of mixing probabilities $(\pi^k_l)_{l \in \mathbb{N}_0}$ with $\pi^k_l \geq 0$ and $\sum_{l \geq 0} \pi^k_l = 1$ such that
 \[
 p(j) = \sum_{l \geq 0} \pi^k_l \, Q^k_l(j),
 \]
@@ -584,7 +617,7 @@ where
 \[
 Q^k_l(j) = \frac{\binom{l - j + k - 1}{k-1}}{\binom{l+k}{l}} \, \mathbf{1}_{\{0 \leq j \leq l\}}
 \]
-is the \emph{$k$-monotone spline} with support $\{0, 1, \ldots, l\}$. Each spline $Q^k_l$ is itself a discrete distribution concentrated in $l+1$ points, and the mixing weights $\pi^k_l$ describe how the overall abundance distribution is assembled from these components. The weights can be recovered from $p$ using the inversion formula
+is the \emph{$k$-monotone spline} with support $\{0, 1, \ldots, l\}$. Each spline $Q^k_l$ is itself a discrete distribution concentrated on $l+1$ points, and the mixing weights $\pi^k_l$ describe how the overall abundance distribution is assembled from these components. The weights can be recovered from $p$ using the inversion formula
 \[
 \pi^k_l = (-1)^k \, \Delta^k p(l) \, \binom{l+k}{l}.
 \]
@@ -597,7 +630,7 @@ This single linear equation links $p(0)$ (the probability that a species goes co
 \[
 \frac{1}{1 - p(0)} = 1 - \sum_{j=1}^{k} (-1)^j \binom{k}{j} p^+(j).
 \]
-This is precisely what the Poisson mixture framework lacked: a structural constraint that identifies $p(0)$ from the observed data. The boundary problem is resolved not by penalizing the mass near $\lambda = 0$, but by working with a model in which $p(0)$ is determined by the shape of the observed distribution. Once $p(0)$ is identified, the estimator $\hat{N} = \lfloor S_{\mathrm{obs}} / (1 - p(0)) \rfloor$ follows directly. This solves the problem of \emph{one cannot see what cannot be seen}.
+This is precisely what the Poisson mixture framework lacked: a structural constraint that identifies $p(0)$ from the observed data. The boundary problem is resolved not by penalizing the mass near $\lambda = 0$, but by working with a model in which $p(0)$ is determined by the shape of the observed distribution. Once $p(0)$ is identified, the estimator $\hat{N} = \lfloor S_{\mathrm{obs}} / (1 - p(0)) \rfloor$ follows directly. This addresses the problem that one cannot directly learn about what cannot be seen.
 
 \vspace{1em}
 
@@ -612,9 +645,9 @@ Figure~\ref{fig:k_monotonicity_examples} gives a visual intuition of the role of
 
 
 \subsubsection{Selection of \texorpdfstring{$k$}{k}}
-The value of $k$ controls the shape restriction, a larger k imposes more constraints  and therefore structure and pushes the support points of the NPMLE further from the left boundary. It is important to note that it does not necessarily produce a higher fitted probability at 0. Therefore, the estimate of $\hat{N}$ does not necessarily increase with $k$ \cite{CheeWang2016} .
+The value of $k$ controls the shape restriction; a larger k imposes more constraints  and therefore structure and pushes the support points of the NPMLE further from the left boundary. It is important to note that it does not necessarily produce a higher fitted probability at 0. Therefore, the estimate of $\hat{N}$ does not necessarily increase with $k$ \cite{CheeWang2016} .
 
-In practice, the appropriate value of $k$ for a given data set is unknown, resulting in a model selection problem. Since the family of $k$-monotone distributions shrinks as $k$ increases, the maximized log-likelihood $\ell_k(\hat{N}, \hat{G})$ decreases monotonically with $k$. Chee and Wang balance the goodness of fit against model complexity by evaluating the Akaike information criterion (AIC. over a grid of $k$ values ranging from $k = 2$ to $k = \infty$, selecting the value that minimizes AIC.
+In practice, the appropriate value of $k$ for a given data set is unknown, resulting in a model selection problem. Since the family of $k$-monotone distributions shrinks as $k$ increases, the maximized log-likelihood $\ell_k(\hat{N}, \hat{G})$ decreases monotonically with $k$. Chee and Wang balance the goodness of fit against model complexity by evaluating the Akaike information criterion (by evaluating the Akaike information criterion (AIC) over a grid of k values ranging from $k = 2$ to $k = \infty$, selecting the value that minimizes AIC).
 The Akaike information criterion is defined as
 \begin{equation}
     \mathrm{AIC}_k = -2\,\ell_k(\hat{N}, \hat{G}) + 2\,d_k\,,
@@ -623,7 +656,7 @@ where $d_k$ denotes the number of support points of the NPMLE $\hat{G}$ under $k
  
 \subsubsection{Complete monotonicity as the limit of \texorpdfstring{$k$}{k}-monotonicity}
 
-As $k$ increases, the family of $k$-monotone distributions becomes increasingly restrictive . A classical result given by Steutel \cite{Steutel1969} characterizes the limiting case: a PMF $p$ on $\mathbb{N}_0$ is completely monotone if and only if it is a mixture of geometric distributions, that is,
+As $k$ increases, the family of $k$-monotone distributions becomes increasingly restrictive. A classical result given by Steutel \cite{Steutel1969} characterizes the limiting case: a PMF $p$ on $\mathbb{N}_0$ is completely monotone if and only if it is a mixture of geometric distributions, that is,
 \begin{equation}
 p(j) = \int_0^1 \alpha(1-\alpha)^j \, dH(\alpha),
 \qquad j \in \mathbb{N}_0
@@ -632,11 +665,11 @@ p(j) = \int_0^1 \alpha(1-\alpha)^j \, dH(\alpha),
 
 where $H$ is a distribution function on $[0,1]$. Thus, geometric distributions play the same role for complete monotonicity as the $k$-monotone splines $Q^k_l$ play for finite $k$, i.e. they are the building blocks from which any completely monotone PMF can be assembled.
 
-Chee and Wang \cite{CheeWang2016} explicitly established the connection by showing that the $k$-monotone mixture PMF converges, as in $k \to \infty$, to a mixture of geometric distributions. Balabdaoui and Kulagina \cite{BalabdaouiKulagina2020} formalized this further: if a sequence of $k$-monotone PMF $(p^k)_{k \in \mathbb{N}}$ has mixing distributions that converge weakly to some distribution $H$ on $[0,1)$, then the sequence converges pointwise to the completely monotone PMF \eqref{eq:cm-mixture}.
+Chee and Wang \cite{CheeWang2016} explicitly established the connection by showing that the $k$-monotone mixture PMF converges, as $k \to \infty$, to a mixture of geometric distributions. Balabdaoui and Kulagina \cite{BalabdaouiKulagina2020} formalized this further: if a sequence of $k$-monotone PMF $(p^k)_{k \in \mathbb{N}}$ has mixing distributions that converge weakly to some distribution $H$ on $[0,1)$, then the sequence converges pointwise to the completely monotone PMF \eqref{eq:cm-mixture}.
 
 \vspace{1em}
 
-With this convergence result, we can justify using the completely monotone model whenever the true degree of monotonicity is large. In practice, when the AIC selection of Chee and Wang keeps selecting larger values of $k$, this suggests that the data is approximately completely monotone, and one can work directly with the limiting model. Doing so eliminates the need to select $k$ altogether, which is a significant practical advantage, as the differences between $k$ and $(k+1)$-monotonicity become increasingly difficult to detect as $k$ grows.
+With this convergence result, we can justify using the completely monotone model whenever the true degree of monotonicity is large. In practice, when the AIC selection of Chee and Wang keeps selecting larger values of $k$, this suggests that the data are approximately completely monotone, and one can work directly with the limiting model. Doing so eliminates the need to select $k$ altogether, which is a significant practical advantage, as the differences between $k$ and $(k+1)$-monotonicity become increasingly difficult to detect as $k$ grows.
 
 \subsubsection{The Balabdaoui and Kulagina estimator: \texorpdfstring{$\hat{N}_{\infty}$}{N-infinity}}
 
@@ -681,10 +714,10 @@ Another important distinction concerns whether different grammatical forms of a 
 
 The latter approach is known as \emph{lemmatization}. A \emph{lemma} is the canonical or dictionary form of a word, so conjugated or plural forms are counted together. Under this convention, \emph{run}, \emph{running}, and \emph{ran} are all associated with the lemma \emph{run}.
 
-In this work, we consider the approach of counting tokens. This method was used for estimating the well known example about vocabulary richness of \emph{Shakespeare}. And because of convenience and for the sake of comparison, we will make use of the same.
+In this work, we consider the approach of counting tokens. This method was used for estimating the well-known example about vocabulary richness of \emph{Shakespeare}. And for convenience and comparability, we use the same convention.
 
 \subsection{Data sources}
-Our analysis draws on five data sources: an established reference corpus, three sources of spoken or dialog-based English, one of spoken French, and one of spoken German.
+Our analysis draws on six data sources: an established reference corpus, three sources of spoken or dialog-based English, one of spoken French, and one of spoken German.
 
 \paragraph{Shakespeare corpus.}  As a baseline for replication and comparison, we use the word frequency counts from Spevack's concordance  \cite{Spevack1968}, comprising 890,426 tokens and 25,700 observed types  across the complete works of Shakespeare. This data set has been widely used  in the literature on species richness \cite{BalabdaouiKulagina2020, CheeWang2016} and allows us to verify our  implementations against published results.
 
@@ -701,14 +734,14 @@ This corpus consists of transcriptions of naturally occurring spoken interaction
 We used the CLAIRE dataset, a large collection of French conversational data aggregated from various dialog sources.
 
 \paragraph{Datenbank Gesprochenes Deutsch (DGD).}
-We used the DGD corpus, a database of spoken German transcribed maintained by the Leibniz Institute for the German Language (IDS Mannheim).
+We used the DGD corpus, a database ofspoken German transcripts maintained by the Leibniz Institute for the German Language (IDS Mannheim).
 
 \vspace{1em}
 
 Our analysis combines one reference literary corpus with five corpora of spoken or dialog-based language.\footnote{See Appendix~\ref{app:sources} for URLs and access information for all data sources.}
 
 \subsection{Preprocessing}
-All texts were lowercased and devoid of punctuation. We remove all the numbers and filler words and leave the contractions as a single type.
+All texts were lowercased and stripped of punctuation.. We removed all numbers and filler words and leave the contractions as a single type.
 For each speaker or character, we computed the abundance frequency counts $f_1, f_2, \ldots$ as defined in Section~\ref{sec:framework}: $f_k$ is the number of types that appear exactly $k$ times in the text of that speaker. These frequency counts serve as input for all estimators described in Sections~\ref{sec:estimators} and~\ref{sec:shape}.
 
 \clearpage
@@ -730,7 +763,7 @@ We first use the full Shakespeare corpus as a replication baseline for the estim
         20+ & 124 & 103 & 89 & 97 & 87 & 89 & 76 & 84 & 59 & 82 \\
         30+ & 74 & 49 & 60 & 56 & 57 & 51 & 34 & 36 & 42 & 40 \\
         40+ & 43 & 52 & 33 & 34 & 23 & 36 & 33 & 33 & 35 & 34 \\
-        50+ & 24 & 17 & 20 & 34 & 27 & 22 & 13 & 21 & 20 & 18 \\
+        50+ & 24 & 17 & 20 & 34 & 27 & 22 & 13 & 21 & 20 & x18 \\
         60+ & 25 & 17 & 18 & 23 & 23 & 13 & 13 & 10 & 16 & 13 \\
         70+ & 16 & 8 & 14 & 17 & 9 & 17 & 8 & 14 & 17 & 11 \\
         80+ & 14 & 16 & 10 & 15 & 8 & 14 & 9 & 6 & 11 & 10 \\
@@ -772,7 +805,7 @@ Figure~\ref{fig:results_rarefaction_extrapolation_shakespeare} shows that the ra
 
 \subsection{Corpus and language overview}
 
-We next summarize the spoken and dialog-based corpora used for the main multilingual analysis. In the cross-language comparison, English consists of IMSDb, BNC, and the Santa Barbara Corpus; French consists of CLAPI; and German consists of DGD.
+We next summarize the spoken and dialog-based corpora used for the main multilingual analysis. In the cross-language comparison, English consists of IMSDb, BNC, and the Santa Barbara Corpus; French consists of CLAIRE; and German consists of DGD.
 
 \vspace{1em}
 
@@ -783,22 +816,22 @@ We next summarize the spoken and dialog-based corpora used for the main multilin
         Language & Corpora included & Number of units & Total tokens & Median tokens & Mean coverage \\
         \hline
         English & bnc, imsdb, sbcorpus & 5517 & 6675363 & 815 & 0.7197 \\
-        French & clapi & 10813 & 160251286 & 1927 & 0.8104 \\
+        French & claire & 10813 & 160251286 & 1927 & 0.8104 \\
         German & dgd & 47 & 68141 & 1485 & 0.7782 \\
     \end{tabular}}
     \caption{Language-level overview of the spoken corpora used in the cross-language comparison. Shakespeare is excluded because it is a written literary corpus.}
     \label{tab:results_language_corpus_overview}
 \end{table}
 
-Table~\ref{tab:results_language_corpus_overview} shows that there is an imbalance in the number of tokens per language. French has the highest, followed by English and then German. Even though English has a higher number of tokens, it mean coverage is smaller than that of German by approximately 6\%. Therefore, later comparisons should use normalized quantities, such as $\hat{S}/S_{\mathrm{obs}}$ and coverage, rather than relying only on estimated raw richness.
+Table~\ref{tab:results_language_corpus_overview} shows that there is an imbalance in the number of tokens per language. French has the highest, followed by English and then German. Even though English has a higher number of tokens, its mean coverage is smaller than that of German by approximately 6\%. Therefore, later comparisons should use normalized quantities, such as $\hat{S}/S_{\mathrm{obs}}$ and coverage, rather than relying only on estimated raw richness.
 
-Table~\ref{tab:results_corpus_overview} exhibits that at the corpus level, CLAPI dominates the total amount of data, while IMSDb contributes most of the English units. The table also shows that some corpora contain very small units, which can make the richness estimates unstable. Shakespeare is included only for context and should not be interpreted as part of the spoken-language comparison.
+Table~\ref{tab:results_corpus_overview} shows that at the corpus level, CLAIRE dominates the total amount of data, while IMSDb contributes most of the English units. The table also shows that some corpora contain very small units, which can make the richness estimates unstable. Shakespeare is included only for context and should not be interpreted as part of the spoken-language comparison.
 
 \vspace{1em}
 
 Figure~\ref{fig:results_coverage_by_language} shows that French has the highest sample coverage across all three languages, indicating that its observed sample is the most complete relative to the estimated total vocabulary. Consequently, French also has the lowest proportion of word types appearing only once, since high coverage is directly linked to a smaller singleton fraction.
 
-The singleton proportions in table~\ref{tab:results_language_frequency_spectrum_summary} reinforce the coverage picture. French has the smallest singleton share relative to the observed vocabulary ($f_1/S_{\mathrm{obs}} = 0.34$), while German has the largest share ($0.56$). A higher singleton fraction means that a larger share of the next sampled tokens is expected to belong to previously unseen types, which implies lower coverage and stronger required extrapolation. This explains why German requires the most extrapolation despite having the smallest total corpus.
+The singleton proportions in Table~\ref{tab:results_language_frequency_spectrum_summary} reinforce the coverage picture. French has the smallest singleton share relative to the observed vocabulary ($f_1/S_{\mathrm{obs}} = 0.34$), while German has the largest share ($0.56$). A higher singleton fraction means that a larger share of the next sampled tokens is expected to belong to previously unseen types, which implies lower coverage and stronger required extrapolation. This explains why German requires the most extrapolation despite having the smallest total corpus.
 
 \begin{table}[htbp]
     \centering
@@ -807,7 +840,7 @@ The singleton proportions in table~\ref{tab:results_language_frequency_spectrum_
         Corpus & Language & Units & Total tokens & Median tokens & Min tokens & Max tokens & Median $S_{\mathrm{obs}}$ & Median coverage \\
         \hline
         BNC & English & 136 & 312275 & 692 & 2 & 36869 & 282 & 0.7947 \\
-        CLAPI & French & 10813 & 160251286 & 1927 & 347 & 2757857 & 585 & 0.8210 \\
+        CLAIRE & French & 10813 & 160251286 & 1927 & 347 & 2757857 & 585 & 0.8210 \\
         DGD & German & 47 & 68141 & 1485 & 423 & 2392 & 543 & 0.7838 \\
         IMSDb & English & 5335 & 6307786 & 814 & 61 & 9529 & 357 & 0.7185 \\
         SBCorpus & English & 46 & 55302 & 1156 & 1 & 5311 & 404 & 0.7930 \\
@@ -846,7 +879,7 @@ The singleton proportions in table~\ref{tab:results_language_frequency_spectrum_
     \label{fig:results_tokens_by_language}
 \end{figure}
 
-In Figure~\ref{fig:results_tokens_by_language} we can observe that the left panel uses a density y-axis so that French, which contributes far more units than the other languages, does not dominate the display; this allows the three languages to be compared on equal footing. The right panel shows token counts per unit by corpus, where CLAPI has the highest median by a large margin. Together, the two panels confirm that sample size varies substantially across languages and corpora and is therefore a major confounder for all later richness comparisons.
+In Figure~\ref{fig:results_tokens_by_language} we can observe that the left panel uses a density y-axis so that French, which contributes far more units than the other languages, does not dominate the display; this allows the three languages to be compared on equal footing. The right panel shows token counts per unit by corpus, where CLAIRE has the highest median by a large margin. Together, the two panels confirm that sample size varies substantially across languages and corpora and is therefore a major confounder for all later richness comparisons.
 
 
 
@@ -895,7 +928,7 @@ Breakaway fails quite often because it does not have enough consecutive nonzero 
 
 
 \subsection{Completely monotone and k-monotone model selection}
-The classical estimators in Section 6.3 treat the abundance distribution as a black box, relying on only f1 and f2. We now turn to the shape-constrained estimators developed in Section 4, which impose structure on the full distribution, and ask whether they produce meaningfully different estimates.
+The classical estimators in Section 6.3 treat the abundance distribution as a black box, relying only $f_1$ and $f_2$. We now turn to the shape-constrained estimators developed in Section 4, which impose structure on the full distribution, and ask whether they produce meaningfully different estimates.
 
 The following figures document how the finite-$k$ and completely monotone shape-constrained estimates behave.
 \begin{table}[htbp]
@@ -913,9 +946,9 @@ The following figures document how the finite-$k$ and completely monotone shape-
     \label{tab:results_cm_kmonotone_summary}
 \end{table}
 
-In all languages and corpora, the AIC-selected $k^\ast$ ranges from small to moderate and never reaches the maximum tested value as shown in table~\ref{tab:results_cm_kmonotone_summary}. This argues that the data does not push toward a completely monotone limit on its own: the finite-$k$ model is adequate and complete monotonicity is not required by the selection criterion. The completely monotone model is therefore useful as a theoretical benchmark, but should not be treated as the uniquely correct choice for these data.
+In all languages and corpora, the AIC-selected $k^\ast$ ranges from small to moderate and never reaches the maximum tested value as shown in table~\ref{tab:results_cm_kmonotone_summary}. This argues that the data do not push toward a completely monotone limit on its own: the finite-$k$ model is adequate and complete monotonicity is not required by the selection criterion. The completely monotone model is therefore useful as a theoretical benchmark, but should not be treated as the uniquely correct choice for these data.
 
-Furthermore the selected values are moderate rather than minimal: $k^\ast=5$ for English, $k^\ast=6$ for French, $k^\ast=4$ for German, and $k^\ast=8$ for Shakespeare (Figure~\ref{fig:results_cm_k_selection_bic}). This suggests that the data are not well described by very low-order monotonicity, but the optimum also does not occur at the largest tested value. Thus, the figure supports the use of moderately flexible finite-$k$ monotone models, while giving only limited evidence for treating the completely monotone model as a necessary limiting case. The steep decrease in AIC for small values of $k$ shows that increasing the order of monotonicity initially substantially improves the fit. After the selected value, the curve becomes almost flat, so additional complexity gives little improvement and is penalized by AIC.
+Furthermore, the selected values are moderate rather than minimal: $k^\ast=5$ for English, $k^\ast=6$ for French, $k^\ast=4$ for German, and $k^\ast=8$ for Shakespeare (Figure~\ref{fig:results_cm_k_selection_bic}). This suggests that the data are not well described by very low-order monotonicity, but the optimum also does not occur at the largest tested value. Thus, the figure supports the use of moderately flexible finite-$k$ monotone models, while giving only limited evidence for treating the completely monotone model as a necessary limiting case. The steep decrease in AIC for small values of $k$ shows that increasing the order of monotonicity initially substantially improves the fit. After the selected value, the curve becomes almost flat, so additional complexity gives little improvement and is penalized by AIC.
 
 \begin{figure}[htbp]
     \centering
@@ -932,7 +965,7 @@ Furthermore the selected values are moderate rather than minimal: $k^\ast=5$ for
     \label{fig:results_cm_vs_kmonotone_scatter}
 \end{figure}
 
-We can see on Figure~\ref{fig:results_cm_vs_kmonotone_scatter} that the AIC-selected finite-$k^\ast$ monotone estimates and the completely monotone estimates are in near-perfect agreement: almost all points lie on the diagonal, meaning both approaches produce essentially the same estimated richness. A strong deviation from the diagonal would have indicated that the choice between finite-$k$ and complete monotonicity materially affects the estimates, but that is not the case here. In practice, the choice of the model has more impact on the theoretical interpretation than on the numerical result.
+In Figure ~\ref{fig:results_cm_vs_kmonotone_scatter},  we see that the AIC-selected finite-$k^\ast$ monotone estimates and the completely monotone estimates are in near-perfect agreement: almost all points lie on the diagonal, meaning both approaches produce essentially the same estimated richness. A strong deviation from the diagonal would have indicated that the choice between finite-$k$ and complete monotonicity materially affects the estimates, but that is not the case here. In practice, the choice of the model has more impact on the theoretical interpretation than on the numerical result.
 
 \subsection{Rarefaction and extrapolation}
 The estimators in the preceding sections each produce a single point estimate of total richness. Rarefaction and extrapolation curves complement this by showing how the observed vocabulary accumulates as sampling effort increases, and how far each speaker is from saturation. This matters for interpreting the point estimates: a speaker whose curve is still rising steeply at the observed sample size has a much larger unobserved vocabulary than the raw $S_{obs}$ suggests, while a flattening curve indicates that most types have already been seen.
@@ -980,7 +1013,7 @@ This comparison uses only spoken and dialog-based corpora. Shakespeare is exclud
     \label{tab:results_cross_language_estimator_summary}
 \end{table}
 
-Unlike Table~\ref{tab:results_per_language_estimator_summary}, which reported the mean and IQR of $\hat{S}$ together with failure counts, the table~\ref{tab:results_cross_language_estimator_summary} focuses on the median observed vocabulary, the median estimated total richness, the median unseen component $\hat{f}_0$ and the normalized ratio $\hat{S}/S_{\mathrm{obs}}$. The raw estimates are highest for French, but the normalized ratios are much closer across languages, which shows why the raw $\hat{S}$ values should not be compared without considering the sample size and coverage.
+Unlike Table~\ref{tab:results_per_language_estimator_summary}, which reported the mean and IQR of $\hat{S}$ together with failure counts, Table~\ref{tab:results_cross_language_estimator_summary} focuses on the median observed vocabulary, the median estimated total richness, the median unseen component $\hat{f}_0$ and the normalized ratio $\hat{S}/S_{\mathrm{obs}}$. The raw estimates are highest for French, but the normalized ratios are much closer across languages, which shows why the raw $\hat{S}$ values should not be compared without considering the sample size and coverage.
 
 \begin{figure}[htbp]
     \centering
@@ -989,7 +1022,7 @@ Unlike Table~\ref{tab:results_per_language_estimator_summary}, which reported th
     \label{fig:results_cross_language_median_shat}
 \end{figure}
 
-As observed in Figure~\ref{fig:results_cross_language_median_shat}, the cross-language difference that is consistent between estimators is that French has the highest median $\hat{S}$, followed by German and then English. This is not only because French has a larger corpus: the English corpus is larger than the German one, and still scores lower, suggesting that corpus size alone does not drive the ordering.
+As shown in Figure~\ref{fig:results_cross_language_median_shat}, the cross-language difference that is consistent between estimators is that French has the highest median $\hat{S}$, followed by German and then English. This is not only because French has a larger corpus: the English corpus is larger than the German one, and still scores lower, suggesting that corpus size alone does not drive the ordering.
 
 Also, when comparing the normalized ratios rather than the raw estimates, the French corpus no longer stands out as clearly (Figure~\ref{fig:results_coverage_standardized_language_comparison}). This is mainly because the number of estimated word types does not grow linearly with the number of tokens but rather logarithmically. The ratio plot is therefore more informative for comparing estimator behavior than the raw $\hat{S}$ plot. It shows that the amount of extrapolation relative to the observed vocabulary is broadly similar across languages for a given estimator, while estimator choice still has a large effect.
 
@@ -1022,9 +1055,9 @@ Finally, we compare the estimators directly across all spoken corpora.
     \label{tab:results_estimator_summary_global}
 \end{table}
 
-In table~\ref{tab:results_estimator_summary_global}, the global summary shows a clear ordering of estimator aggressiveness. Jackknife1 gives the smallest median ratio, Chao1 and Jackknife2 give moderate ratios, iChao1 is slightly above Chao1, ACE gives larger estimates because it corrects for heterogeneity among rare types, and Breakaway gives the largest median ratio. The very large mean ratio for Breakaway indicates that a small number of successful fits produce extremely large estimates.
+In Table~\ref{tab:results_estimator_summary_global}, the global summary shows a clear ordering of estimator aggressiveness. Jackknife1 gives the smallest median ratio, Chao1 and Jackknife2 give moderate ratios, iChao1 is slightly above Chao1, ACE gives larger estimates because it corrects for heterogeneity among rare types, and Breakaway gives the largest median ratio. The very large mean ratio for Breakaway indicates that a small number of successful fits produce extremely large estimates.
 
-Chao1, iChao1, and Jackknife1 are numerically stable on all units. ACE and Jackknife2 fail only rarely. Breakaway fails for about half of the units, meaning its summaries are based only on the subset of corpora where the ratio-regression fit is possible and valid. This makes Breakaway less reliable as a general-purpose estimator for the present data (table~\ref{tab:results_estimator_failure_summary}).
+Chao1, iChao1, and Jackknife1 are numerically stable on all units. ACE and Jackknife2 fail only rarely. Breakaway fails for about half of the units, meaning its summaries are based only on the subset of corpora where the ratio-regression fit is possible and valid. This makes Breakaway less reliable as a general-purpose estimator for the present data (Table~\ref{tab:results_estimator_failure_summary}).
 
 \begin{table}[htbp]
     \centering
@@ -1053,7 +1086,7 @@ Chao1, iChao1, and Jackknife1 are numerically stable on all units. ACE and Jackk
 In Figure~\ref{fig:results_estimator_ratio_over_chao1} the ratios relative to Chao1 show how each estimator scales compared with a familiar lower-bound baseline. Values above 1 mean that an estimator is more aggressive than Chao1, while values below 1 mean that it gives smaller estimates. This representation is easier to compare across corpora of different absolute sizes.
 
 \subsection{Summary}
-The results of this section paint a coherent picture. Across all three languages and all estimators, the observed vocabulary captures only a fraction of the estimated total, ranging between a half and a third, depending on the estimator. The choice of estimator matters far more than the choice of language: median ratios range from around 1.6 for Jackknife1 to over 5 for Breakaway, while for any given estimator the ratios are consistent across English, French, and German. The near-perfect agreement of shape-constrained estimators with Chao1 and iChao1 suggests that the finite-k model is sufficient for this type of data. Breakaway, while being theoretically appealing, fails on half the corpus and should be used with caution for short spoken samples. These findings set up the conclusion in Section 7, where we interpret the cross-language consistency as evidence that the gap between what a speaker says and what they could say is a relatively universal property of spoken language.
+The results of this section paint a coherent picture. Across all three languages and all estimators, the observed vocabulary captures only a fraction of the estimated total, ranging between one-half and one-third, depending on the estimator. The choice of estimator matters far more than the choice of language: median ratios range from around 1.6 for Jackknife1 to over 5 for Breakaway, while for any given estimator the ratios are consistent across English, French, and German. The near-perfect agreement of shape-constrained estimators with Chao1 and iChao1 suggests that the finite-k model is sufficient for this type of data. Breakaway, although theoretically appealing, fails on half the corpus and should be used with caution for short spoken samples. These findings set up the conclusion in Section 7, where we interpret the cross-language consistency as evidence that the gap between what a speaker says and what they could say is a relatively universal property of spoken language.
 
 \clearpage
 \section{Conclusion}\label{sec:conclusion}
@@ -1066,7 +1099,7 @@ The most striking finding of this work is that, once estimates are normalized by
 
 \vspace{1em}
 
-The shape-constrained estimators, i.e., the finite $k$-monotone model of Chee and Wang~\cite{CheeWang2016} and the completely monotone estimator of Balabdaoui and Kulagina~\cite{BalabdaouiKulagina2020}, produce estimates that are in near-perfect agreement with each other, and the AIC-selected degree of monotonicity $k^*$ is moderate across all languages and corpora. This confirms that the data is well described by a moderately flexible shape-constrained model and that the completely monotone limit is not strictly required by these data. Breakaway, on the contrary, fails for roughly half of all units, making it unreliable as a general-purpose estimator for short spoken samples.
+The shape-constrained estimators, i.e., the finite $k$-monotone model of Chee and Wang~\cite{CheeWang2016} and the completely monotone estimator of Balabdaoui and Kulagina~\cite{BalabdaouiKulagina2020}, produce estimates that are in near-perfect agreement with each other, and the AIC-selected degree of monotonicity $k^*$ is moderate across all languages and corpora. This confirms that the data are well described by a moderately flexible shape-constrained model and that the completely monotone limit is not strictly required by these data. By contrast, Breakaway fails for roughly half of all units, making it unreliable as a general-purpose estimator for short spoken samples.
 
 \vspace{1em}
 
@@ -1149,5 +1182,9 @@ G(z)
 \clearpage
 \bibliographystyle{plain}
 \bibliography{references}
+
+\cleardoublepage
+\includepdf[pages=-]{declaration-originality.pdf}
+
 \end{document}
 
